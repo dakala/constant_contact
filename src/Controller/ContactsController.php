@@ -76,7 +76,7 @@ class ContactsController extends ControllerBase {
 
     return $build = [
       '#theme' => 'cc_contact',
-      '#fields' => \Drupal::service('constant_contact.manager')->convertObjectToArray($contact),
+      '#fields' => \Drupal::service('constant_contact.manager')->convertObjectToArray($contact, $constant_contact_account),
     ];
   }
 

@@ -20,7 +20,11 @@ class ContactListForm extends FormBase {
   /** @var \Drupal\constant_contact\ConstantContactManagerInterface */
   protected $constantContactManager;
 
-  protected $fields;
+  /** @var  \Drupal\constant_contact\AccountInterface $account */
+  protected $account;
+
+  /** @var  int $listid */
+  protected $listid;
 
   /**
    * AccountInfoForm constructor.
@@ -46,14 +50,14 @@ class ContactListForm extends FormBase {
     return 'constant_contact_contact_list';
   }
 
-  protected function getFields() {
-    return $this->fields;
-  }
-
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, AccountInterface $constant_contact_account = NULL, $listid = NULL) {
+    // Set variables.
+    $this->account = $constant_contact_account;
+    $this->listid = $listid;
+
     $account_info = $this->constantContactManager->getAccountInfo($constant_contact_account);
     if (!$account_info instanceof AccountInfo) {
       return $form['message'] = [
@@ -90,17 +94,6 @@ class ContactListForm extends FormBase {
       '#disabled' => !empty($list),
     );
 
-    // Pass arguments to submit callback.
-    $form['listid'] = [
-      '#type' => 'value',
-      '#value' => !empty($list) ? $list->id : 0,
-    ];
-
-    $form['constant_contact_account'] = [
-      '#type' => 'value',
-      '#value' => $constant_contact_account,
-    ];
-
     $form['actions'] = ['#type' => 'actions'];
     $form['actions']['submit'] = [
       '#type' => 'submit',
@@ -123,19 +116,14 @@ class ContactListForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $constant_contact_account = $form_state->getValue('constant_contact_account');
-    $listid = $form_state->getValue('listid');
-    
-    $list = ($listid) ?
-      $this->constantContactManager->getContactList($constant_contact_account, $listid) :
+    $list = ($this->listid) ?
+      $this->constantContactManager->getContactList($this->account, $this->listid) :
       new ContactList();
 
     $now = date(DATE_ISO8601, REQUEST_TIME);
-    // old list.
-    if ($listid) {
-       $list->id = $listid;
-    }
-    else {
+
+    // new list
+    if (!$this->listid) {
       $list->created_date = $now;
     }
 
@@ -143,45 +131,45 @@ class ContactListForm extends FormBase {
     $list->status = $form_state->getValue('status');
     $list->modified_date = $now;
 
-    if($listid) {
-      $returnList = $this->constantContactManager->putContactList($constant_contact_account, $list);
+    if($this->listid) {
+      $returnList = $this->constantContactManager->putContactList($this->account, $list);
     }
     else {
-      $returnList = $this->constantContactManager->createContactList($constant_contact_account, $list);
+      $returnList = $this->constantContactManager->createContactList($this->account, $list);
     }
 
     if ($returnList instanceof ContactList) {
-      if($listid) {
-        $this->logger('constant_contact')->info('Contact list: %label created by %user', [
-          '%label' => $returnList->name,
-          '%user' => \Drupal::currentUser()->getAccountName(),
-        ]);
-        $message = $this->t('Created contact list: %label.', ['%label' => $returnList->name]);
-      }
-      else {
+      if($this->listid) {
         $this->logger('constant_contact')->info('Contact list: %label updated by %user', [
           '%label' => $returnList->name,
           '%user' => \Drupal::currentUser()->getAccountName(),
         ]);
-        $message = $this->t('Updated contact list %label.', ['%label' => $returnList->name]);
+        $message = $this->t('Updated contact list: %label.', ['%label' => $returnList->name]);
+      }
+      else {
+        $this->logger('constant_contact')->info('Contact list: %label created by %user', [
+          '%label' => $returnList->name,
+          '%user' => \Drupal::currentUser()->getAccountName(),
+        ]);
+        $message = $this->t('Created contact list %label.', ['%label' => $returnList->name]);
       }
 
       // Cache is stale.
-      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contact_lists:' . $constant_contact_account->id());
+      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contact_lists:' . $this->account->id());
     }
     else {
       $message = $this->t('Contact list operation failed.');
     }
     drupal_set_message($message);
 
-    $form_state->setRedirect('constant_contact.contact_list.collection', ['constant_contact_account' => $constant_contact_account->id()]);
+    $form_state->setRedirect('constant_contact.contact_list.collection', ['constant_contact_account' => $this->account->id()]);
   }
 
   /**
    * Submit handler for cancel button
    */
-  public function standardCancel($form, FormStateInterface $form_state, AccountInterface $constant_contact_account = NULL, $listid = NULL) {
-    $form_state->setRedirect('constant_contact.contact_list.collection', ['constant_contact_account' => $constant_contact_account->id()]);
+  public function standardCancel($form, FormStateInterface $form_state) {
+    $form_state->setRedirect('constant_contact.contact_list.collection', ['constant_contact_account' => $this->account->id()]);
   }
 
 }

@@ -132,6 +132,23 @@ class ConstantContactManager implements ConstantContactManagerInterface {
 
   /**
    * @param \Drupal\constant_contact\AccountInterface $account
+   * @return array
+   */
+  public function getContactListsOptions(AccountInterface $account, $empty = FALSE) {
+    $options = [];
+    if ($empty) {
+      $options[0] = t('--Select--');
+    }
+
+    $lists = $this->getContactLists($account);
+    foreach($lists as $list) {
+      $options[$list->id] = $list->name;
+    }
+    return $options;
+  }
+
+  /**
+   * @param \Drupal\constant_contact\AccountInterface $account
    * @param $listid
    * @return mixed|null
    */
@@ -187,8 +204,6 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     return $data;
   }
 
-
-
   /**
    * @param \Drupal\constant_contact\AccountInterface $account
    * @param \Ctct\Components\Contacts\ContactList $list
@@ -215,14 +230,46 @@ class ConstantContactManager implements ConstantContactManagerInterface {
 
   /**
    * @param \Drupal\constant_contact\AccountInterface $account
-   * @param $contact_id
+   * @param $contactId
    * @return \Ctct\Components\Contacts\Contact
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function getContact(AccountInterface $account, $contact_id) {
+  public function getContact(AccountInterface $account, $contactId) {
+    $returnContact = NULL;
+    $contacts = $this->getContacts($account);
+    foreach ($contacts as $contact) {
+      if ($contact->id == $contactId) {
+        $returnContact = $contact;
+        break;
+      }
+    }
+    return $returnContact;
+  }
+
+  /**
+   * @param \Drupal\constant_contact\AccountInterface $account
+   * @param \Ctct\Components\Contacts\Contact $contact
+   * @param bool $actionByContact
+   * @return \Ctct\Components\Contacts\Contact
+   * @throws \Ctct\Exceptions\CtctException
+   */
+  public function createContact(AccountInterface $account, Contact $contact, $actionByContact = FALSE) {
     $cc = new ConstantContact($account->id());
     // @todo: error code
-    return $cc->contactService->getContact($account->getAccessToken(), $contact_id);
+    return $cc->contactService->addContact($account->getAccessToken(), $contact, $actionByContact);
+  }
+
+  /**
+   * @param \Drupal\constant_contact\AccountInterface $account
+   * @param \Ctct\Components\Contacts\Contact $contact
+   * @param bool $actionByContact
+   * @return \Ctct\Components\Contacts\Contact
+   * @throws \Ctct\Exceptions\CtctException
+   */
+  public function putContact(AccountInterface $account, Contact $contact, $actionByContact = FALSE) {
+    $cc = new ConstantContact($account->id());
+    // @todo: error code
+    return $cc->contactService->updateContact($account->getAccessToken(), $contact, $actionByContact);
   }
 
   /**
@@ -230,14 +277,14 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    *
    * @param $object
    * @param string $empty
+   * @param \Drupal\constant_contact\AccountInterface|NULL $account
    * @return array
    */
-  public function convertObjectToArray($object, $empty = '-') {
+  public function convertObjectToArray($object, AccountInterface $account = NULL, $empty = '-') {
     $fields = $this->getFields($object);
     $array = [];
     foreach ($fields as $field) {
-      //$value = is_string($object->{$field}) ? trim($object->{$field}) : $object->{$field};
-      $value = $this->getFieldValue($object, $field);
+      $value = $this->getFieldValue($object, $field, $account);
       $array[$this->normalizeFieldName($field)] = !empty($value) ? $value : $empty;
     }
     return $array;
@@ -258,7 +305,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @param $field
    * @return string
    */
-  public function getFieldValue($object, $field) {
+  public function getFieldValue($object, $field, AccountInterface $account = NULL) {
     // strings, integers and booleans
     switch (TRUE) {
       case is_string($object->{$field}) || is_int($object->{$field}):
@@ -285,7 +332,15 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       // contact
       case 'addresses': // TODO:
       case 'notes': // TODO:
-      case 'lists': // TODO:
+      case 'lists':
+        $listNames = $this->getListsForContact($object->{$field}, $account);
+        return [
+          'data' => [
+            '#theme' => 'item_list',
+            '#items' => $listNames,
+          ]
+        ];
+
       case 'custom_fields': // TODO:
       default:
         return $object->{$field};
@@ -308,6 +363,52 @@ class ConstantContactManager implements ConstantContactManagerInterface {
 
   public function normalizeFieldNamesArray($array) {
     return array_map([$this, 'normalizeFieldName'], $array);
+  }
+
+  /**
+   * @TODO: Move to settings.
+   *
+   * @return array
+   */
+  public function getContactStatuses() {
+    return [
+      'ACTIVE',
+      'UNCONFIRMED',
+      'OPTOUT',
+      'REMOVED',
+      'NON_SUBSCRIBER',
+      'VISITOR',
+      'TEMP_HOLD',
+    ];
+  }
+
+  /**
+   * @param $lists
+   * @return array
+   */
+  public function getListIdsForContact(array $lists) {
+    $listIds = [];
+    foreach ($lists as $list) {
+      $listIds[] = $list->id;
+    }
+    return $listIds;
+  }
+
+  /**
+   * @param array $lists
+   * @param \Drupal\constant_contact\AccountInterface $account
+   * @return array
+   */
+  public function getListsForContact(array $lists, AccountInterface $account) {
+    $listNames = [];
+    $listIds = $this->getListIdsForContact($lists);
+    $contactLists = $this->getContactLists($account);
+    foreach ($contactLists as $contactList) {
+      if (in_array($contactList->id, $listIds)) {
+        $listNames[] = $contactList->name;
+      }
+    }
+    return $listNames;
   }
 
 }
