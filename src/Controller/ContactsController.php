@@ -18,7 +18,7 @@ class ContactsController extends ControllerBase {
    * @return mixed
    */
   public function index(AccountInterface $constant_contact_account, $listid = NULL) {
-    $contacts = \Drupal::service('constant_contact.manager')->getContacts($constant_contact_account, $listid)->results;
+    $contacts = \Drupal::service('constant_contact.manager')->getContacts($constant_contact_account, $listid);
 
     $fields = $this->getFields();
     $header = \Drupal::service('constant_contact.manager')->normalizeFieldNamesArray($fields);
