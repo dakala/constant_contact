@@ -17,3 +17,13 @@ constant_contact.contacts.collection:
   title: 'Manage contacts'
   route_name: constant_contact.contacts.collection
   base_route: constant_contact.account.manage
+
+constant_contact.contact.view:
+  title: View
+  route_name: constant_contact.contact.view
+  base_route: constant_contact.contact.view
+
+constant_contact.contact.edit:
+  title: Edit
+  route_name: constant_contact.contact.edit
+  base_route: constant_contact.contact.view
