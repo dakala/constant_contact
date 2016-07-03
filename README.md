@@ -1,14 +1,14 @@
 # Constact Contact - Drupal 8
 
-Note: This is a development version and the management of the dependencies hasn't been determined yet. If you'd like to see what it does, please try it in a local sandbox.
+__Note:__ This is a development version and the management of the dependencies hasn't been determined yet. If you'd like to see what it does, __try it in a local sandbox__. A number of things may change.
 
-Dependencies:
+__Dependencies:__
 
  - A Constant Contact account. You can get a 60-day free trial - http://bit.ly/cctrial
  - Constant Contact PHP SDK for v2 API - https://github.com/dakala/php-sdk
  - CSV data manipulation made easy in PHP - https://github.com/thephpleague/csv
 
-Steps:
+__Steps:__
 
 - Edit your composer.json:
 
