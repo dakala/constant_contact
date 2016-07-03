@@ -74,8 +74,6 @@ class ContactsController extends ControllerBase {
   public function view(AccountInterface $constant_contact_account, $id) {
     $contact = \Drupal::service('constant_contact.manager')->getContact($constant_contact_account, $id);
 
-    kint($contact);
-
     return $build = [
       '#theme' => 'cc_contact',
       '#fields' => \Drupal::service('constant_contact.manager')->convertObjectToArray($contact),
