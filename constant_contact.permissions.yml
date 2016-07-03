@@ -1,0 +1,3 @@
+administer constant contact:
+  title: 'Administer constant contact'
+  restrict access: true

@@ -1,0 +1,20 @@
+#fields:
+#  account_info:
+#    - website
+#    - organization_name
+#    - time_zone
+#    - first_name
+#    - last_name
+#    - email
+#    - phone
+#    - company_logo
+#    - country_code
+#    - state_code
+#    - organization_addresses
+#  contact_list:
+#    - id
+#    - name
+#    - status
+#    - created_date
+#    - modified_date
+#    - contact_count

@@ -1,0 +1,145 @@
+<?php
+
+/**
+ * @file
+ * Constant Contact module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\constant_contact\Controller\AccountController;
+
+/**
+ * Implements hook_help().
+ */
+function constant_contact_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.constant_contact':
+      $output = '';
+      $output .= '<h3>' . t('Constant Contact') . '</h3>';
+      $output .= '<p>' . t('The Constant constact module provides integration with <a href=":cc-api-url">Constant Contact API</a>.', [':cc-api-url' => 'http://developer.constantcontact.com']) . '</p>';
+      return $output;
+
+    case 'constant_contact.settings':
+      return '<p>' . t('TODO:') . '</p>';
+
+    case 'constant_contact_account.add':
+      return '<p>' . t('These account details are issued and managed by Constant Contact') . '</p>';
+
+    case 'entity.constant_contact_account.collection':
+      return '<p>' . t('These are your available Constant Contact account details. They are managed on <a href=":cc-url">Constant Contact website</a> but may be required for authentication or/and authorisation from this application.', [':cc-url' => 'http://www.constantcontact.com/']) . '</p>';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function constant_contact_theme() {
+  return [
+    'cc_account_info' => [
+      'variables' => ['fields' => NULL],
+    ],
+    'cc_contact' => [
+      'variables' => ['fields' => NULL],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function constant_contact_entity_operation(EntityInterface $entity) {
+  $operations = [];
+  $account = \Drupal::currentUser();
+  $entity_type = $entity->getEntityType();
+
+  if($entity_type->id() == 'constant_contact_account' && $account->hasPermission('administer constant contact')) {
+    $operations['cc-account'] = [
+      'title' => t('Manage account'),
+      'weight' => 15,
+      'url' => Url::fromRoute("constant_contact.account.manage", [
+        'constant_contact_account' => $entity->id(),
+      ]),
+    ];
+    $operations['cc-contacts'] = [
+      'title' => t('Manage contacts'),
+      'weight' => 16,
+      'url' => Url::fromRoute("constant_contact.contacts.collection", [
+        'constant_contact_account' => $entity->id(),
+      ]),
+    ];
+
+    $operations['cc-contact-lists'] = [
+      'title' => t('Manage contact lists'),
+      'weight' => 17,
+      'url' => Url::fromRoute("constant_contact.contact_list.collection", [
+        'constant_contact_account' => $entity->id(),
+      ]),
+    ];
+  }
+
+  return $operations;
+}
+
+/**
+ * Prepare variables for account information template.
+ *
+ * @param $variables
+ */
+function template_preprocess_cc_account_info(&$variables) {
+  $variables['title'] = t('Account details');
+  foreach($variables['fields']['Organization addresses'] as $key => $address) {
+    $variables['fields']['Organization addresses'][$key] = constant_contact_orgranization_address_to_string($address);
+  }
+}
+
+/**
+ * Prepare variables for account information template.
+ *
+ * @param $variables
+ */
+function template_preprocess_cc_contact(&$variables) {
+  // @TODO: Review $variables['account']
+  $variables['title'] = t('Contact details');
+//  foreach ($variables['fields']['Organization addresses'] as $key => $address) {
+//    $variables['fields']['Organization addresses'][$key] = constant_contact_orgranization_address_to_string($address);
+//  }
+}
+
+/**
+ * Format organization address from Constant Contact for display.
+ *
+ * @param $address
+ * @return string
+ */
+function constant_contact_orgranization_address_to_string($address, $separator = "<br>") {
+  $array = [
+    $address['line1'],
+    $address['line2'],
+    $address['city'] . ', ' . $address['postal_code'],
+    $address['country_code']
+  ];
+
+  return implode($separator, $array);
+}
+
+/**
+ * Format organization address for Constant Contact.
+ *
+ * @param $string
+ * @param string $separator
+ * @return array
+ */
+function constant_contact_orgranization_address_to_array($string, $separator = "\r\n") {
+  $array = explode($separator, $string);
+  $city_code = explode(", ", $array[2]);
+  $address = [
+    'city' => $city_code[0],
+    'line1' => $array[0],
+    'line2' => $array[1],
+    'postal_code' => $city_code[1],
+    'country_code' => $array[3],
+  ];
+  return $address;
+}

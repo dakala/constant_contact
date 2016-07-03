@@ -1,0 +1,19 @@
+constant_contact.account.manage:
+  title: View
+  route_name: constant_contact.account.manage
+  base_route: constant_contact.account.manage
+
+constant_contact.account.edit:
+  title: Edit
+  route_name: constant_contact.account.edit
+  base_route: constant_contact.account.manage
+
+constant_contact.contact_list.collection:
+  title: 'Manage contact lists'
+  route_name: constant_contact.contact_list.collection
+  base_route: constant_contact.account.manage
+
+constant_contact.contacts.collection:
+  title: 'Manage contacts'
+  route_name: constant_contact.contacts.collection
+  base_route: constant_contact.account.manage

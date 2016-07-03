@@ -1,0 +1,5 @@
+name: Constant Contact
+type: module
+description: Provides integration with Constant Contact API.
+package: Custom
+core: 8.x

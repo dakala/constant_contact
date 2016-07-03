@@ -1,0 +1,17 @@
+constant_contact.constant_contact_account_add:
+  route_name: constant_contact.constant_contact_account_add
+  title: 'Add account'
+  appears_on:
+    - entity.constant_contact_account.collection
+
+constant_contact.contact_list.add:
+  route_name: constant_contact.contact_list.add
+  title: 'Add Contact list'
+  appears_on:
+    - constant_contact.contact_list.collection
+
+constant_contact.contact.add:
+  route_name: constant_contact.contact.add
+  title: 'Add Contact'
+  appears_on:
+    - constant_contact.contacts.collection

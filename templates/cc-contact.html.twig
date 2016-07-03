@@ -1,0 +1,17 @@
+
+<h1>{{ title }}</h1>
+
+{% if fields %}
+    <dl>
+        {% for key, value in fields %}
+            <dt>{{ key }}</dt>
+            {% if key == 'Organization addresses' %}
+                {% for item in value %}
+                    <dd>{{ item | raw }}</dd>
+                {% endfor %}
+            {% else %}
+                <dd>{{ value }}</dd>
+            {% endif %}
+        {% endfor %}
+    </dl>
+{% endif %}

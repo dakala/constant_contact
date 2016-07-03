@@ -1,0 +1,192 @@
+# constant contact
+constant_contact.admin_index:
+  path: '/admin/config/constant_contact'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Constant Contact'
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.settings:
+  path: '/admin/config/constant_contact/settings'
+  defaults:
+    _form: 'Drupal\constant_contact\Form\ConstantContactSettingsForm'
+    _title: 'Constant Contact settings'
+  requirements:
+    _permission: 'administer constant contact'
+
+# account
+entity.constant_contact_account.collection:
+  path: '/admin/config/constant_contact/account'
+  defaults:
+    _entity_list: 'constant_contact_account'
+    _title: 'Accounts'
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.constant_contact_account_add:
+  path: '/admin/config/constant_contact/account/add'
+  defaults:
+    _entity_form: 'constant_contact_account.default'
+    _title: 'Add account'
+  requirements:
+    _permission: 'administer constant contact'
+
+entity.constant_contact_account.edit_form:
+  path: '/admin/config/constant_contact/account/{constant_contact_account}/edit'
+  defaults:
+    _entity_form: 'constant_contact_account.default'
+    _title: 'Edit account'
+  requirements:
+    _entity_access: 'constant_contact_account.update'
+
+entity.constant_contact_account.delete_form:
+  path: '/admin/config/constant_contact/account/{constant_contact_account}/delete'
+  defaults:
+    _entity_form: 'constant_contact_account.delete'
+    _title: 'Delete account'
+  requirements:
+    _entity_access: 'constant_contact_account.delete'
+
+# manage account
+constant_contact.account.manage:
+  path: '/admin/config/constant_contact/account/{constant_contact_account}/manage'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\AccountController::accountInfo'
+    _title_callback: '\Drupal\constant_contact\Controller\AccountController::title'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.account.edit:
+  path: '/admin/config/constant_contact/account/{constant_contact_account}/edit'
+  defaults:
+    _form: '\Drupal\constant_contact\Form\AccountInfoForm'
+    _title_callback: '\Drupal\constant_contact\Controller\AccountController::title'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+# contact lists
+constant_contact.contact_list.collection:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact_list'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\ContactListController::index'
+    _title: 'Contact lists'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.contact_list.add:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact_list/add'
+  defaults:
+    _form: '\Drupal\constant_contact\Form\ContactListForm'
+    _title: 'Add Contact list'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.contact_list.edit:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact_list/{listid}/edit'
+  defaults:
+    _form: '\Drupal\constant_contact\Form\ContactListForm'
+    _title: 'Edit Contact list'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.contact_list.delete:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact_list/{listid}/delete'
+  defaults:
+    _form: '\Drupal\constant_contact\Form\ContactListDeleteForm'
+    _title: 'Delete Contact list'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+# contacts /admin/config/constant_contact/uv4bbfkbs3qsrcguhkc9zvdk/contact/1248701508
+constant_contact.contacts.collection:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contacts/{listid}'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\ContactsController::index'
+    _title: 'Contacts'
+    listid: NULL
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+# todo:
+constant_contact.contact.add:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact/add'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
+    _title: 'Contact'
+    listid: NULL
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+# todo:
+constant_contact.contact.view:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/view'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\ContactsController::view'
+    _title: 'Contact'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+# todo:
+constant_contact.contact.edit:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/edit'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
+    _title: 'Contact'
+    listid: NULL
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+# todo:
+constant_contact.contact.delete:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/delete'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
+    _title: 'Contact'
+    listid: NULL
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'

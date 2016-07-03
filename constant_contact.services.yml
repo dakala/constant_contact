@@ -1,0 +1,16 @@
+services:
+  constant_contact_account:
+    class: Drupal\constant_contact\ParamConverter\ConstantContactParamConverter
+    tags:
+      - { name: paramconverter }
+  constant_contact.manager:
+    class: Drupal\constant_contact\ConstantContactManager
+    arguments: ['@config.factory', '@entity.manager', '@database', '@string_translation']
+    tags:
+      - { name: backend_overridable }
+  cache.constant_contact:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+      - { name: cache.bin }
+    factory: cache_factory:get
+    arguments: [constant_contact]
