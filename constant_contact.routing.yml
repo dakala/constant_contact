@@ -122,7 +122,7 @@ constant_contact.contact_list.delete:
   requirements:
     _permission: 'administer constant contact'
 
-# contacts /admin/config/constant_contact/uv4bbfkbs3qsrcguhkc9zvdk/contact/1248701508
+# contacts
 constant_contact.contacts.collection:
   path: '/admin/config/constant_contact/{constant_contact_account}/contacts/{listid}'
   defaults:
@@ -136,13 +136,11 @@ constant_contact.contacts.collection:
   requirements:
     _permission: 'administer constant contact'
 
-# todo:
 constant_contact.contact.add:
   path: '/admin/config/constant_contact/{constant_contact_account}/contact/add'
   defaults:
-    _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
-    _title: 'Contact'
-    listid: NULL
+    _form: '\Drupal\constant_contact\Form\ContactForm'
+    _title: 'Add contact'
   options:
     parameters:
       constant_contact_account:
@@ -150,7 +148,6 @@ constant_contact.contact.add:
   requirements:
     _permission: 'administer constant contact'
 
-# todo:
 constant_contact.contact.view:
   path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/view'
   defaults:
@@ -163,13 +160,11 @@ constant_contact.contact.view:
   requirements:
     _permission: 'administer constant contact'
 
-# todo:
 constant_contact.contact.edit:
   path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/edit'
   defaults:
-    _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
-    _title: 'Contact'
-    listid: NULL
+    _form: '\Drupal\constant_contact\Form\ContactForm'
+    _title: 'Add contact'
   options:
     parameters:
       constant_contact_account:
