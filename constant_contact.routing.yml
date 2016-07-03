@@ -178,7 +178,35 @@ constant_contact.contact.delete:
   defaults:
     _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
     _title: 'Contact'
-    listid: NULL
+    id: NULL
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+#  todo:
+constant_contact.contacts.import:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact/import/{id}'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
+    _title: 'Import contacts'
+    id: NULL
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+#  todo:
+constant_contact.contacts.export:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact/export/{id}'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
+    _title: 'Export contacts'
+    id: NULL
   options:
     parameters:
       constant_contact_account:

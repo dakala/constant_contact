@@ -33,6 +33,16 @@ class ContactListController extends ControllerBase {
         'url' => Url::fromRoute('constant_contact.contacts.collection', ['constant_contact_account' => $constant_contact_account->id(), 'listid' => $list->id]),
       );
 
+      $links['import'] = array(
+        'title' => $this->t('Import contacts'),
+        'url' => Url::fromRoute('constant_contact.contacts.import', ['constant_contact_account' => $constant_contact_account->id(), 'listid' => $list->id]),
+      );
+
+      $links['export'] = array(
+        'title' => $this->t('Export contacts'),
+        'url' => Url::fromRoute('constant_contact.contacts.export', ['constant_contact_account' => $constant_contact_account->id(), 'listid' => $list->id]),
+      );
+
       $links['edit'] = [
         'title' => $this->t('Edit'),
         'url' => Url::fromRoute('constant_contact.contact_list.edit', ['constant_contact_account' => $constant_contact_account->id(), 'listid' => $list->id]),

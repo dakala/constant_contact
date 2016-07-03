@@ -15,3 +15,15 @@ constant_contact.contact.add:
   title: 'Add Contact'
   appears_on:
     - constant_contact.contacts.collection
+
+constant_contact.contacts.import:
+  route_name: constant_contact.contacts.import
+  title: 'Import contacts'
+  appears_on:
+    - constant_contact.contacts.collection
+
+constant_contact.contacts.export:
+  route_name: constant_contact.contacts.export
+  title: 'Export contacts'
+  appears_on:
+    - constant_contact.contacts.collection
