@@ -5,8 +5,8 @@ namespace Drupal\constant_contact;
 use Ctct\ConstantContact;
 use CtCt\Components\Account\AccountInfo;
 use Ctct\Components\Contacts\ContactList;
+use Ctct\Components\Contacts\Contact;
 use Drupal\constant_contact\AccountInterface;
-
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityManagerInterface;
@@ -166,15 +166,28 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function getContacts(AccountInterface $account, $listid = NULL) {
-    $cc = new ConstantContact($account->id());
-    // @todo: error code
-    if ($listid) {
-      return $cc->contactService->getContactsFromList($account->getAccessToken(), $listid);
+    $api_key = $account->id();
+    $cid = 'constant_contact:contacts:' . $api_key;
+    $cid .= ($listid) ? ':' . $listid : '';
+
+    $data = NULL;
+    if ($cache = \Drupal::cache(self::CC_CACHE_BIN)->get($cid)) {
+      $data = $cache->data;
     }
     else {
-      return $cc->contactService->getContacts($account->getAccessToken());
+      $cc = new ConstantContact($api_key);
+
+      $data = ($listid) ? $cc->contactService->getContactsFromList($account->getAccessToken(), $listid)->results :
+        $cc->contactService->getContacts($account->getAccessToken())->results;
+
+      if ($data[0] instanceof Contact) {
+        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + self::CC_CACHE_EXPIRE);
+      }
     }
+    return $data;
   }
+
+
 
   /**
    * @param \Drupal\constant_contact\AccountInterface $account
