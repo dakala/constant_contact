@@ -7,6 +7,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\constant_contact\ConstantContactManagerInterface;
+use Drupal\constant_contact\ConstantContactManager;
+use Drupal\constant_contact\AccountInterface;
 
 /**
  * Account information.
@@ -16,11 +18,13 @@ class AccountInfoForm extends FormBase {
   /** @var  \Drupal\constant_contact\Entity\Account $account */
   protected $account;
 
+  /** @var  \Ctct\Components\Account\AccountInfo $accountInfo */
   protected $accountInfo;
 
   /** @var \Drupal\constant_contact\ConstantContactManagerInterface */
   protected $constantContactManager;
 
+  /** @var  array $fields */
   protected $fields;
 
   const ADDRESSES_SEPARATOR = "\r\n---------------------------------------\r\n";
@@ -31,7 +35,6 @@ class AccountInfoForm extends FormBase {
    * @param \Drupal\constant_contact\ConstantContactManagerInterface $constant_contact_manager
    */
   public function __construct(ConstantContactManagerInterface $constant_contact_manager) {
-    $this->account = \Drupal::request()->get('constant_contact_account');
     $this->constantContactManager = $constant_contact_manager;
   }
 
@@ -69,10 +72,12 @@ class AccountInfoForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    $account_info = $this->constantContactManager->getAccountInfo($this->account);
+  public function buildForm(array $form, FormStateInterface $form_state, AccountInterface $constant_contact_account = NULL) {
+    // Set variable.
+    $this->account = $constant_contact_account;
 
-    if (!$account_info instanceof \CtCt\Components\Account\AccountInfo) {
+    $account_info = $this->constantContactManager->getAccountInfo($constant_contact_account);
+    if (!$account_info instanceof AccountInfo) {
       return $form['message'] = [
         '#type' => 'markup',
         '#markup' => t('No account info available.')
@@ -106,7 +111,7 @@ class AccountInfoForm extends FormBase {
         ];
       }
     }
-    
+
     $form['actions'] = ['#type' => 'actions'];
     $form['actions']['submit'] = [
       '#type' => 'submit',
@@ -122,6 +127,7 @@ class AccountInfoForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $updated_account_info = $this->getAccountInfo();
+
     foreach ($this->getFields() as $field) {
       $value = trim($form_state->getValue($field));
       $value = $field == 'organization_addresses' ? $this->addressesToArray($value) : $value;
@@ -135,6 +141,10 @@ class AccountInfoForm extends FormBase {
         '%label' => $this->account->label(),
         '%user' => \Drupal::currentUser()->getAccountName(),
       ]);
+
+      // Cache is stale.
+      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:account:' . $this->account->id());
+
       $message = $this->t('Updated account %label.', ['%label' => $this->account->label()]);
     }
     else {
