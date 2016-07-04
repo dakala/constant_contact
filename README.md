@@ -6,7 +6,6 @@ __Dependencies:__
 
  - A Constant Contact account. You can get a 60-day free trial - http://bit.ly/cctrial
  - Constant Contact PHP SDK for v2 API - https://github.com/dakala/php-sdk
- - CSV data manipulation made easy in PHP - https://github.com/thephpleague/csv
 
 __Steps:__
 
@@ -16,7 +15,6 @@ __Steps:__
   "require": {
       ...
       "constantcontact/constantcontact": "dev-development",
-      "league/csv": "^8.0",   
       ...
   },
   ...
