@@ -16,6 +16,7 @@ use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Ctct\Components\Activities\ExportContacts;
 use Ctct\Components\Activities\AddContacts;
+use Exception;
 
 /**
  * Class ConstantContactManager
@@ -90,6 +91,33 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     else {
       $cc = new ConstantContact($api_key);
       $data = $cc->accountService->getAccountInfo($account->getAccessToken());
+      if ($data instanceof AccountInfo) {
+        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + self::CC_CACHE_EXPIRE);
+      }
+    }
+    return $data;
+  }
+
+  /**
+   * @param $api_key
+   * @param $access_token
+   * @return \Ctct\Components\Account\AccountInfo|null
+   * @throws \Ctct\Exceptions\CtctException
+   */
+  public function getAccountInfoFromData($api_key, $access_token) {
+    $data = NULL;
+    $cid = 'constant_contact:account:' . $api_key;
+    if ($cache = \Drupal::cache(self::CC_CACHE_BIN)->get($cid)) {
+      $data = $cache->data;
+    }
+    else {
+      $cc = new ConstantContact($api_key);
+      try {
+        $data = $cc->accountService->getAccountInfo($access_token);
+      } catch (Exception $e) {
+        $data = FALSE;
+      }
+
       if ($data instanceof AccountInfo) {
         \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + self::CC_CACHE_EXPIRE);
       }

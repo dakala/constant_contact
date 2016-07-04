@@ -2,6 +2,7 @@
 
 namespace Drupal\constant_contact;
 
+use Ctct\Components\Account\AccountInfo;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -44,9 +45,24 @@ class AccountForm extends EntityForm {
       '#title' => t('Access token'),
       '#type' => 'textfield',
       '#default_value' => $entity->getAccessToken(),
+      '#required' => TRUE,
     ];
 
     return parent::form($form, $form_state, $entity);
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+    // Make sure the API key and access token are valid.
+    $values = $form_state->getValues();
+    $result = \Drupal::service('constant_contact.manager')->getAccountInfoFromData($values['api_key'], $values['access_token']);
+    if (!$result instanceof  AccountInfo) {
+      $form_state->setErrorByName('api_key', $this->t('Make sure the API key is valid.'));
+      $form_state->setErrorByName('access_token', $this->t('Make sure the Access token is valid.'));
+    }
   }
 
   /**

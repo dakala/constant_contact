@@ -14,6 +14,8 @@ interface ConstantContactManagerInterface {
 
   public function getAccountInfo(AccountInterface $account);
 
+  public function getAccountInfoFromData($api_key, $access_token);
+  
   public function putAccountInfo(AccountInterface $account, AccountInfo $account_info);
 
   public function getContactLists(AccountInterface $account);
