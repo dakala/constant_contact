@@ -40,10 +40,18 @@ class ContactsController extends ControllerBase {
         'title' => $this->t('Edit'),
         'url' => Url::fromRoute('constant_contact.contact.edit', ['constant_contact_account' => $constant_contact_account->id(), 'id' => $contact->id]),
       ];
-      $links['delete'] = array(
-        'title' => $this->t('Delete'),
-        'url' => Url::fromRoute('constant_contact.contact.delete', ['constant_contact_account' => $constant_contact_account->id(), 'id' => $contact->id]),
-      );
+
+      $links['remove'] = [
+        'title' => $this->t('Remove'),
+        'url' => Url::fromRoute('constant_contact.contact.remove', ['constant_contact_account' => $constant_contact_account->id(), 'id' => $contact->id]),
+      ];
+
+      if ($contact->status != 'OPTOUT') {
+        $links['unsubscribe'] = array(
+          'title' => $this->t('Unsubscribe'),
+          'url' => Url::fromRoute('constant_contact.contact.unsubscribe', ['constant_contact_account' => $constant_contact_account->id(), 'id' => $contact->id]),
+        );
+      }
 
       $row[] = [
         'data' => [

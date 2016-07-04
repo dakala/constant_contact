@@ -18,6 +18,11 @@ constant_contact.contacts.collection:
   route_name: constant_contact.contacts.collection
   base_route: constant_contact.account.manage
 
+constant_contact.activities:
+  title: 'Manage activities'
+  route_name: constant_contact.activities
+  base_route: constant_contact.account.manage
+
 constant_contact.contact.view:
   title: View
   route_name: constant_contact.contact.view

@@ -27,3 +27,4 @@ constant_contact.contacts.export:
   title: 'Export contacts'
   appears_on:
     - constant_contact.contacts.collection
+

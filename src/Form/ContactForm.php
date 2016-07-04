@@ -82,6 +82,8 @@ class ContactForm extends FormBase {
       '#title' => $this->t('Last name'),
     ];
 
+    // @todo:
+    // A user with status = 'OPTOUT' can't be added by the account owner.
     $status = $this->constantContactManager->getContactStatuses();
     $form['status'] = [
       '#type' => 'select',
@@ -92,7 +94,7 @@ class ContactForm extends FormBase {
 
     $form['confirmed'] = [
       '#type' => 'select',
-      '#options' => ['Y', 'N'],
+      '#options' => ['N', 'Y'],
       '#default_value' => !empty($contact) ? $contact->confirmed : '',
       '#title' => $this->t('Confirmed'),
     ];
@@ -223,7 +225,7 @@ class ContactForm extends FormBase {
    * @return array
    */
   public function getEmptyOption() {
-    return [0 => '--Select--'];
+    return [0 => '- Select -'];
   }
 
 }

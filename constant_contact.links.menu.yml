@@ -13,7 +13,7 @@ constant_contact.settings:
 
 entity.constant_contact_account.collection:
   title: 'Accounts'
-  description: 'List and manage accounts.'
+  description: 'List and manage your Constant Contact accounts.'
   route_name: entity.constant_contact_account.collection
   parent: constant_contact.admin_index
   weight: -19

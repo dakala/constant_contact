@@ -14,6 +14,8 @@ use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Ctct\Components\Activities\ExportContacts;
+use Ctct\Components\Activities\AddContacts;
 
 /**
  * Class ConstantContactManager
@@ -137,7 +139,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
   public function getContactListsOptions(AccountInterface $account, $empty = FALSE) {
     $options = [];
     if ($empty) {
-      $options[0] = t('--Select--');
+      $options[0] = t('- Select -');
     }
 
     $lists = $this->getContactLists($account);
@@ -270,6 +272,52 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     $cc = new ConstantContact($account->id());
     // @todo: error code
     return $cc->contactService->updateContact($account->getAccessToken(), $contact, $actionByContact);
+  }
+
+  /**
+   * @param \Drupal\constant_contact\AccountInterface $account
+   * @param \Ctct\Components\Activities\ExportContacts $exportContacts
+   * @return array
+   * @throws \Ctct\Exceptions\CtctException
+   */
+  public function exportContactsActivity(AccountInterface $account, ExportContacts $exportContacts) {
+    $cc = new ConstantContact($account->id());
+    // @todo: error code
+    return $cc->activityService->addExportContactsActivity($account->getAccessToken(), $exportContacts);
+  }
+
+  /**
+   * @param \Drupal\constant_contact\AccountInterface $account
+   * @param \Ctct\Components\Activities\AddContacts $addContacts
+   * @return array
+   * @throws \Ctct\Exceptions\CtctException
+   */
+  public function importContactsActivity(AccountInterface $account, AddContacts $addContacts) {
+    $cc = new ConstantContact($account->id());
+    return $cc->activityService->createAddContactsActivity($account->getAccessToken(), $addContacts);
+  }
+
+  /**
+   * @param \Drupal\constant_contact\AccountInterface $account
+   * @param $fileName
+   * @param $fileLocation
+   * @param $lists
+   * @return \Ctct\Components\Activities\Activity
+   * @throws \Ctct\Exceptions\CtctException
+   */
+  public function importContactsActivityFromFile(AccountInterface $account, $fileName, $fileLocation, $lists) {
+    $cc = new ConstantContact($account->id());
+    return $cc->activityService->createAddContactsActivityFromFile($account->getAccessToken(), $fileName, $fileLocation, $lists);
+  }
+
+  /**
+   * @param \Drupal\constant_contact\AccountInterface $account
+   * @param $contactId
+   * @throws \Ctct\Exceptions\CtctException
+   */
+  public function unsubscribeContact(AccountInterface $account, $contactId) {
+    $cc = new ConstantContact($account->id());
+    $cc->contactService->unsubscribeContact($account->getAccessToken(), $contactId);
   }
 
   /**

@@ -77,6 +77,14 @@ function constant_contact_entity_operation(EntityInterface $entity) {
         'constant_contact_account' => $entity->id(),
       ]),
     ];
+
+    $operations['cc-activities'] = [
+      'title' => t('Manage activities'),
+      'weight' => 17,
+      'url' => Url::fromRoute("constant_contact.activities", [
+        'constant_contact_account' => $entity->id(),
+      ]),
+    ];
   }
 
   return $operations;

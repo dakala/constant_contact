@@ -172,40 +172,74 @@ constant_contact.contact.edit:
   requirements:
     _permission: 'administer constant contact'
 
+constant_contact.contact.unsubscribe:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/unsubscribe'
+  defaults:
+    _form: '\Drupal\constant_contact\Form\ContactUnsubscribeForm'
+    _title: 'Unsubscribe contact'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.contact.remove:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/remove'
+  defaults:
+    _form: '\Drupal\constant_contact\Form\ContactRemoveForm'
+    _title: 'Remove contact'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
 # todo:
 constant_contact.contact.delete:
   path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/delete'
   defaults:
+    _form: '\Drupal\constant_contact\Form\ContactDeleteForm'
+    _title: 'Delete contact'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.contacts.import:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact/import/{listid}'
+  defaults:
+    _form: 'Drupal\constant_contact\Form\ContactImportForm'
+    _title: 'Import contacts'
+    listid: NULL
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.contacts.export:
+  path: '/admin/config/constant_contact/{constant_contact_account}/contact/export/{listid}'
+  defaults:
+    _form: 'Drupal\constant_contact\Form\ContactExportForm'
+    _title: 'Export contacts'
+    listid: NULL
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.activities:
+  path: '/admin/config/constant_contact/{constant_contact_account}/activities'
+  defaults:
     _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
     _title: 'Contact'
-    id: NULL
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
-  requirements:
-    _permission: 'administer constant contact'
-
-#  todo:
-constant_contact.contacts.import:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact/import/{id}'
-  defaults:
-    _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
-    _title: 'Import contacts'
-    id: NULL
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
-  requirements:
-    _permission: 'administer constant contact'
-
-#  todo:
-constant_contact.contacts.export:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact/export/{id}'
-  defaults:
-    _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
-    _title: 'Export contacts'
     id: NULL
   options:
     parameters:

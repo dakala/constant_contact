@@ -6,6 +6,9 @@ namespace Drupal\constant_contact;
 use CtCt\Components\Account\AccountInfo;
 use CtCt\Components\Contacts\ContactList;
 use CtCt\Components\Contacts\Contact;
+use Ctct\Components\Activities\ExportContacts;
+use Ctct\Components\Activities\AddContacts;
+
 
 interface ConstantContactManagerInterface {
 
@@ -35,8 +38,16 @@ interface ConstantContactManagerInterface {
 
   public function putContact(AccountInterface $account, Contact $contact, $actionByContact);
 
+  public function unsubscribeContact(AccountInterface $account, $contactId);
+
   public function getListsForContact(array $lists, AccountInterface $account);
 
   public function getListIdsForContact(array $lists);
+
+  public function exportContactsActivity(AccountInterface $account, ExportContacts $exportContacts);
+
+  public function importContactsActivity(AccountInterface $account, AddContacts $addContacts);
+
+  public function importContactsActivityFromFile(AccountInterface $account, $fileName, $fileLocation, $lists);
 
 }
