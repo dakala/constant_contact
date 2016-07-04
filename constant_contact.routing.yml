@@ -222,12 +222,36 @@ constant_contact.contacts.export:
   requirements:
     _permission: 'administer constant contact'
 
-constant_contact.activities:
+# activities
+constant_contact.activities.collection:
   path: '/admin/config/constant_contact/{constant_contact_account}/activities'
   defaults:
-    _controller: 'Drupal\constant_contact\Controller\ContactsController::todo'
-    _title: 'Contact'
-    id: NULL
+    _controller: 'Drupal\constant_contact\Controller\ActivitiesController::index'
+    _title: 'Activities'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.activities.view:
+  path: '/admin/config/constant_contact/{constant_contact_account}/activities/{id}/view'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\ActivitiesController::view'
+    _title: 'View activity'
+  options:
+    parameters:
+      constant_contact_account:
+        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.activities.download:
+  path: '/admin/config/constant_contact/{constant_contact_account}/activities/download'
+  defaults:
+    _controller: 'Drupal\constant_contact\Controller\ActivitiesController::todo'
+    _title: 'Download activities'
   options:
     parameters:
       constant_contact_account:

@@ -2,6 +2,7 @@
 
 namespace Drupal\constant_contact;
 
+use Ctct\Components\Activities\Activity;
 use Ctct\ConstantContact;
 use CtCt\Components\Account\AccountInfo;
 use Ctct\Components\Contacts\ContactList;
@@ -145,6 +146,51 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     }
     return $data;
   }
+
+  /**
+   * @param \Drupal\constant_contact\AccountInterface $account
+   * @return array|bool
+   */
+  public function getActivities(AccountInterface $account) {
+    $api_key = $account->id();
+    $cid = 'constant_contact:activities:' . $api_key;
+
+    $data = NULL;
+    if ($cache = \Drupal::cache(self::CC_CACHE_BIN)->get($cid)) {
+      $data = $cache->data;
+    }
+    else {
+      $cc = new ConstantContact($api_key);
+      try {
+        $data = $cc->activityService->getActivities($account->getAccessToken());
+      } catch (Exception $e) {
+        $data = FALSE;
+      }
+
+      if ($data[0] instanceof Activity) {
+        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + self::CC_CACHE_EXPIRE);
+      }
+    }
+    return $data;
+  }
+
+  /**
+   * @param \Drupal\constant_contact\AccountInterface $account
+   * @param $activityId
+   * @return mixed|null
+   */
+  public function getActivity(AccountInterface $account, $activityId) {
+    $returnActivity = NULL;
+    $activities = $this->getActivities($account);
+    foreach ($activities as $activity) {
+      if ($activity->id == $activityId) {
+        $returnActivity = $activity;
+        break;
+      }
+    }
+    return $returnActivity;
+  }
+
 
   /**
    * @param \Drupal\constant_contact\AccountInterface $account
@@ -417,8 +463,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     $fields = $this->getFields($object);
     $array = [];
     foreach ($fields as $field) {
-      $value = $this->getFieldValue($object, $field, $account);
-      $array[$this->normalizeFieldName($field)] = !empty($value) ? $value : $empty;
+      $array[$this->normalizeFieldName($field)] = $this->getFieldValue($object, $field, $account, $empty);
     }
     return $array;
   }
@@ -438,47 +483,79 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @param $field
    * @return string
    */
-  public function getFieldValue($object, $field, AccountInterface $account = NULL) {
+  public function getFieldValue($object, $field, AccountInterface $account = NULL, $empty = '-') {
     // strings, integers and booleans
     switch (TRUE) {
-      case is_string($object->{$field}) || is_int($object->{$field}):
-        return trim($object->{$field});
+      case is_string($object->{$field}):
+        return !empty($object->{$field}) ? $object->{$field} : $empty;
+
+      case is_int($object->{$field}):
+        return $object->{$field};
 
       case is_bool($object->{$field}):
         return $object->{$field} ? 'Y' : 'N';
     }
 
     switch ($field) {
-      case 'email_addresses':
-        $email_addresses = [];
-        foreach ($object->{$field} as $email) {
-          $email_addresses[] = $email->email_address;
+      // activity
+      case 'errors':
+      case 'warnings':
+        if (!empty($object->{$field})) {
+          $value = [
+            'data' => [
+              '#theme' => 'item_list',
+              '#items' => $object->{$field},
+            ]
+          ];
         }
-
-        return [
-          'data' => [
-            '#theme' => 'item_list',
-            '#items' => $email_addresses,
-          ]
-        ];
+        else {
+          $value = $empty;
+        }
+        return $value;
 
       // contact
+      case 'email_addresses':
+        if (!empty($object->{$field})) {
+          $email_addresses = [];
+          foreach ($object->{$field} as $email) {
+            $email_addresses[] = $email->email_address;
+          }
+
+          $value = [
+            'data' => [
+              '#theme' => 'item_list',
+              '#items' => $email_addresses,
+            ]
+          ];
+        }
+        else {
+          $value = $empty;
+        }
+        return $value;
+
       case 'addresses': // TODO:
       case 'notes': // TODO:
       case 'lists':
-        $listNames = $this->getListsForContact($object->{$field}, $account);
-        return [
-          'data' => [
-            '#theme' => 'item_list',
-            '#items' => $listNames,
-          ]
-        ];
+        if (!empty($object->{$field})) {
+          $listNames = $this->getListsForContact($object->{$field}, $account);
+          $value = [
+            'data' => [
+              '#theme' => 'item_list',
+              '#items' => $listNames,
+            ]
+          ];
+        }
+        else {
+          $value = $empty;
+        }
+        return $value;
 
       case 'custom_fields': // TODO:
       default:
         return $object->{$field};
     }
   }
+
   /**
    * Prepare field name for display as label.
    *

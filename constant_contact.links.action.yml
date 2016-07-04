@@ -28,3 +28,8 @@ constant_contact.contacts.export:
   appears_on:
     - constant_contact.contacts.collection
 
+constant_contact.activities.download:
+  route_name: constant_contact.activities.download
+  title: 'Download activities'
+  appears_on:
+    - constant_contact.activities.collection

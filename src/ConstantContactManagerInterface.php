@@ -15,7 +15,7 @@ interface ConstantContactManagerInterface {
   public function getAccountInfo(AccountInterface $account);
 
   public function getAccountInfoFromData($api_key, $access_token);
-  
+
   public function putAccountInfo(AccountInterface $account, AccountInfo $account_info);
 
   public function getContactLists(AccountInterface $account);
@@ -51,5 +51,9 @@ interface ConstantContactManagerInterface {
   public function importContactsActivity(AccountInterface $account, AddContacts $addContacts);
 
   public function importContactsActivityFromFile(AccountInterface $account, $fileName, $fileLocation, $lists);
+
+  public function getActivities(AccountInterface $account);
+
+  public function getActivity(AccountInterface $account, $activityId);
 
 }

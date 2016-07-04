@@ -43,6 +43,9 @@ function constant_contact_theme() {
     'cc_contact' => [
       'variables' => ['fields' => NULL],
     ],
+    'cc_activity' => [
+      'variables' => ['fields' => NULL],
+    ],
   ];
 }
 
@@ -81,7 +84,7 @@ function constant_contact_entity_operation(EntityInterface $entity) {
     $operations['cc-activities'] = [
       'title' => t('Manage activities'),
       'weight' => 17,
-      'url' => Url::fromRoute("constant_contact.activities", [
+      'url' => Url::fromRoute("constant_contact.activities.collection", [
         'constant_contact_account' => $entity->id(),
       ]),
     ];
@@ -110,9 +113,16 @@ function template_preprocess_cc_account_info(&$variables) {
 function template_preprocess_cc_contact(&$variables) {
   // @TODO: Review $variables['account']
   $variables['title'] = t('Contact details');
-//  foreach ($variables['fields']['Organization addresses'] as $key => $address) {
-//    $variables['fields']['Organization addresses'][$key] = constant_contact_orgranization_address_to_string($address);
-//  }
+}
+
+/**
+ * Prepare variables for account information template.
+ *
+ * @param $variables
+ */
+function template_preprocess_cc_activity(&$variables) {
+  // @TODO: Review $variables['account']
+  $variables['title'] = t('Activity details');
 }
 
 /**

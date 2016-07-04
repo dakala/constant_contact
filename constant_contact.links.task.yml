@@ -18,9 +18,9 @@ constant_contact.contacts.collection:
   route_name: constant_contact.contacts.collection
   base_route: constant_contact.account.manage
 
-constant_contact.activities:
+constant_contact.activities.collection:
   title: 'Manage activities'
-  route_name: constant_contact.activities
+  route_name: constant_contact.activities.collection
   base_route: constant_contact.account.manage
 
 constant_contact.contact.view:
