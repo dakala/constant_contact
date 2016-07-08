@@ -14,3 +14,11 @@ constant_contact.account.*:
     access_token:
       type: string
       label: 'Access token'
+
+constant_contact.settings:
+  type: config_object
+  label: 'Constant Contact settings'
+  mapping:
+    address_provider:
+      type: string
+      label: 'Address provider'
