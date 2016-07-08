@@ -1,0 +1,19 @@
+<?php
+
+
+/**
+ * Implements hook_requirements().
+ */
+function constant_requirements($phase) {
+  $requirements = [];
+  if ($phase == 'install') {
+    if (!class_exists('\Ctct\ConstantContact')) {
+      $requirements['addressing_library'] = [
+        'description' => t('Constant Contact requires the constantcontact/constantcontact library.'),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+  }
+
+  return $requirements;
+}
