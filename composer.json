@@ -1,0 +1,23 @@
+{
+  "name": "drupal/constant_contact",
+  "type": "drupal-module",
+  "description": "Provides Constant Contact integration",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/constant_contact",
+  "authors": [
+    {
+      "name": "Deji Akala",
+      "email": "dejiakala@gmail.com",
+      "homepage": "https://github.com/dakala",
+      "role": "Maintainer"
+    }
+  ],
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/constant_contact",
+    "irc": "irc://irc.freenode.org/drupal-contribute",
+    "source": "http://cgit.drupalcode.org/constant_contact"
+  },
+  "require": { }
+}
