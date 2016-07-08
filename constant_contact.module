@@ -8,7 +8,9 @@
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\constant_contact\Controller\AccountController;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_help().
@@ -18,7 +20,8 @@ function constant_contact_help($route_name, RouteMatchInterface $route_match) {
     case 'help.page.constant_contact':
       $output = '';
       $output .= '<h3>' . t('Constant Contact') . '</h3>';
-      $output .= '<p>' . t('The Constant constact module provides integration with <a href=":cc-api-url">Constant Contact API</a>.', [':cc-api-url' => 'http://developer.constantcontact.com']) . '</p>';
+      $output .= '<p>' . t('The Constant constact module provides integration with <a href=":cc-api-url">Constant Contact API</a>.',
+          [':cc-api-url' => 'http://developer.constantcontact.com']) . '</p>';
       return $output;
 
     case 'constant_contact.settings':
@@ -28,7 +31,8 @@ function constant_contact_help($route_name, RouteMatchInterface $route_match) {
       return '<p>' . t('These account details are issued and managed by Constant Contact') . '</p>';
 
     case 'entity.constant_contact_account.collection':
-      return '<p>' . t('These are your available Constant Contact account details. They are managed on <a href=":cc-url">Constant Contact website</a> but may be required for authentication or/and authorisation from this application.', [':cc-url' => 'http://www.constantcontact.com/']) . '</p>';
+      return '<p>' . t('These are your available Constant Contact account details. They are managed on <a href=":cc-url">Constant Contact website</a> but may be required for authentication or/and authorisation from this application.',
+        [':cc-url' => 'http://www.constantcontact.com/']) . '</p>';
   }
 }
 
@@ -57,7 +61,7 @@ function constant_contact_entity_operation(EntityInterface $entity) {
   $account = \Drupal::currentUser();
   $entity_type = $entity->getEntityType();
 
-  if($entity_type->id() == 'constant_contact_account' && $account->hasPermission('administer constant contact')) {
+  if ($entity_type->id() == 'constant_contact_account' && $account->hasPermission('administer constant contact')) {
     $operations['cc-account'] = [
       'title' => t('Manage account'),
       'weight' => 15,
@@ -100,7 +104,7 @@ function constant_contact_entity_operation(EntityInterface $entity) {
  */
 function template_preprocess_cc_account_info(&$variables) {
   $variables['title'] = t('Account details');
-  foreach($variables['fields']['Organization addresses'] as $key => $address) {
+  foreach ($variables['fields']['Organization addresses'] as $key => $address) {
     $variables['fields']['Organization addresses'][$key] = constant_contact_orgranization_address_to_string($address);
   }
 }
@@ -131,7 +135,10 @@ function template_preprocess_cc_activity(&$variables) {
  * @param $address
  * @return string
  */
-function constant_contact_orgranization_address_to_string($address, $separator = "<br>") {
+function constant_contact_orgranization_address_to_string(
+  $address,
+  $separator = "<br>"
+) {
   $array = [
     $address['line1'],
     $address['line2'],
@@ -149,7 +156,10 @@ function constant_contact_orgranization_address_to_string($address, $separator =
  * @param string $separator
  * @return array
  */
-function constant_contact_orgranization_address_to_array($string, $separator = "\r\n") {
+function constant_contact_orgranization_address_to_array(
+  $string,
+  $separator = "\r\n"
+) {
   $array = explode($separator, $string);
   $city_code = explode(", ", $array[2]);
   $address = [
@@ -160,4 +170,114 @@ function constant_contact_orgranization_address_to_array($string, $separator = "
     'country_code' => $array[3],
   ];
   return $address;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function constant_contact_form_field_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $field = $form_state->getFormObject()->getEntity();
+  if ($field->getTargetEntityTypeId() != 'profile') {
+    return;
+  }
+
+  $form['field']['profile']['cc_contact'] = [
+    '#type' => 'select',
+    '#options' => constant_contact_contact_fields(TRUE),
+    '#title' => t('Constant contact field.'),
+    '#default_value' => $field->getThirdPartySetting('constant_contact', 'cc_contact'),
+    '#weight' => 100,
+  ];
+
+  $config = \Drupal::configFactory()->get('constant_contact.settings');
+  if($field->getType() == $config->get('address_provider')) {
+    $form['field']['profile']['cc_address_type'] = [
+      '#type' => 'select',
+      '#options' => constant_contact_address_types(TRUE),
+      '#title' => t('Address type.'),
+      '#default_value' => $field->getThirdPartySetting('constant_contact', 'cc_address_type', 'simpleaddress'),
+      '#weight' => 101,
+    ];
+  }
+
+  $form['actions']['submit']['#submit'][] = 'constant_contact_form_field_config_edit_form_submit';
+}
+
+/**
+ * Form submission handler for constant_contact_form_field_config_edit_form_alter.
+ *
+ * @param array $form
+ *   The form array.
+ * @param FormStateInterface $form_state
+ *   The form state.
+ */
+function constant_contact_form_field_config_edit_form_submit(array $form, FormStateInterface $form_state) {
+  $field = $form_state->getFormObject()->getEntity();
+  $values = &$form_state->getValues();
+
+  // Update settings for CC fields.
+  if ($values['cc_contact']) {
+    $field->setThirdPartySetting('constant_contact', 'cc_contact',  $values['cc_contact']);
+    $field->save();
+  }
+  else {
+    $field->unsetThirdPartySetting('constant_contact', 'cc_contact');
+    $field->save();
+  }
+
+  if ($values['cc_address_type']) {
+    $field->setThirdPartySetting('constant_contact', 'cc_address_type', $values['cc_address_type']);
+    $field->save();
+  }
+  else {
+    $field->unsetThirdPartySetting('constant_contact', 'cc_address_type');
+    $field->save();
+  }
+}
+
+/**
+ * @param bool $include_empty
+ * @return array
+ */
+function constant_contact_contact_fields($include_empty = FALSE) {
+  $fields = [];
+  if ($include_empty) {
+    $fields[] = t('-- Select --');
+  }
+
+  $standard = [
+    'first_name' => 'First name',
+    'last_name' => 'Last name',
+    'prefix_name' => 'Salutation',
+    'company_name' => 'company',
+    'job_title' => 'Job title',
+    'address' => 'Address',
+    'home_phone' => 'Home phone number',
+    'cell_phone' => 'Cell phone number',
+    'work_phone' => 'Work phone number',
+    'fax' => 'Fax number',
+  ];
+
+  foreach ($standard as $key => $value) {
+    $fields[$key] = $value;
+  }
+
+  for ($i = 1; $i <= 15; $i++) {
+    $fields['CustomField' . $i] = 'Custom field ' . $i;
+  }
+  return $fields;
+}
+
+/**
+ * @return array
+ */
+function constant_contact_address_types($include_empty = FALSE) {
+  $fields = [];
+  if ($include_empty) {
+    $fields[] = t('-- Select --');
+  }
+
+  $fields['BUSINESS'] = 'BUSINESS';
+  $fields['PERSONAL'] = 'PERSONAL';
+  return $fields;
 }
