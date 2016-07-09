@@ -73,7 +73,7 @@ class ContactUnsubscribeForm extends ConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     \Drupal::service('constant_contact.manager')->unsubscribeContact($this->account, $this->contact->id);
 
-    \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contacts:' . $this->account->id());
+    \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contacts:' . $this->account->getApiKey());
 
     $this->logger('constant_contact')->info('Contact: %label unsubscribed by %user', [
       '%label' => $this->contact->email_addresses[0]->email_address,

@@ -15,17 +15,17 @@ constant_contact.settings:
   requirements:
     _permission: 'administer constant contact'
 
-# account
+# account entity
 entity.constant_contact_account.collection:
-  path: '/admin/config/constant_contact/account'
+  path: '/admin/config/constant_contact/accounts'
   defaults:
     _entity_list: 'constant_contact_account'
     _title: 'Accounts'
   requirements:
     _permission: 'administer constant contact'
 
-constant_contact.constant_contact_account_add:
-  path: '/admin/config/constant_contact/account/add'
+entity.constant_contact_account.add_form:
+  path: '/admin/config/constant_contact/accounts/add'
   defaults:
     _entity_form: 'constant_contact_account.default'
     _title: 'Add account'
@@ -33,7 +33,7 @@ constant_contact.constant_contact_account_add:
     _permission: 'administer constant contact'
 
 entity.constant_contact_account.edit_form:
-  path: '/admin/config/constant_contact/account/{constant_contact_account}/edit'
+  path: '/admin/config/constant_contact/accounts/{constant_contact_account}/edit'
   defaults:
     _entity_form: 'constant_contact_account.default'
     _title: 'Edit account'
@@ -41,14 +41,14 @@ entity.constant_contact_account.edit_form:
     _entity_access: 'constant_contact_account.update'
 
 entity.constant_contact_account.delete_form:
-  path: '/admin/config/constant_contact/account/{constant_contact_account}/delete'
+  path: '/admin/config/constant_contact/accounts/{constant_contact_account}/delete'
   defaults:
     _entity_form: 'constant_contact_account.delete'
     _title: 'Delete account'
   requirements:
     _entity_access: 'constant_contact_account.delete'
 
-# manage account
+# manage CC account
 constant_contact.account.manage:
   path: '/admin/config/constant_contact/account/{constant_contact_account}/manage'
   defaults:

@@ -155,7 +155,7 @@ class ContactListForm extends FormBase {
       }
 
       // Cache is stale.
-      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contact_lists:' . $this->account->id());
+      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contact_lists:' . $this->account->getApiKey());
     }
     else {
       $message = $this->t('Contact list operation failed.');

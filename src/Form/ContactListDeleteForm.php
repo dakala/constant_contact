@@ -13,7 +13,7 @@ use Drupal\constant_contact\ConstantContactManager;
 
 /**
  * @deprecated ???
- * 
+ *
  * Form for deleting an image effect.
  */
 class ContactListDeleteForm extends ConfirmFormBase {
@@ -76,7 +76,7 @@ class ContactListDeleteForm extends ConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     \Drupal::service('constant_contact.manager')->deleteContactList($this->account, $this->list->id);
 
-    \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contact_lists:' . $this->account->id());
+    \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contact_lists:' . $this->account->getApiKey());
 
     $this->logger('constant_contact')->info('Contact list: %label deleted by %user', [
       '%label' => $this->list->name,

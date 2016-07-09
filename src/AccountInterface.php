@@ -9,6 +9,8 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface AccountInterface extends ConfigEntityInterface {
 
+  public function getApiKey();
+
   public function getSecret();
 
   public function getAccessToken();

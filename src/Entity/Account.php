@@ -23,7 +23,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   admin_permission = "administer constant contact",
  *   config_prefix = "account",
  *   entity_keys = {
- *     "id" = "api_key",
+ *     "id" = "id",
  *     "label" = "application",
  *   },
  *   links = {
@@ -33,6 +33,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "collection" = "/admin/config/constant_contact/account",
  *   },
  *   config_export = {
+ *     "id",
  *     "api_key",
  *     "application",
  *     "secret",
@@ -47,45 +48,44 @@ class Account extends ConfigEntityBase implements AccountInterface {
    *
    * @var string
    */
-  protected $api_key;
+  protected $id;
 
   /**
-   * The human-readable name of the node type.
+   * The API key.
+   *
+   * @var string
+   */
+  protected $api_key;
+
+
+  /**
+   * CC Application name.
    *
    * @var string
    */
   protected $application;
 
   /**
-   * A brief description of this node type.
-   *
-   * @var string
-   */
-  protected $description;
-
-  /**
-   * Help information shown to the user when creating a Node of this type.
+   * CC Secret
    *
    * @var string
    */
   protected $secret;
 
   /**
-   * Default value of the 'Create new revision' checkbox of this node type.
+   * CC Access token.
    *
    * @var string
    */
   protected $access_token;
 
-  /**
-   * {@inheritdoc}
-   */
-  public function id() {
-    return $this->api_key;
-  }
 
   public function label() {
     return $this->application;
+  }
+
+  public function getApiKey() {
+    return $this->api_key;
   }
 
   public function getSecret() {

@@ -39,7 +39,7 @@ class AccountListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['id'] = $this->t('API key');
+    $header['api_key'] = $this->t('API key');
     $header['label'] = $this->t('Application');
     $header['secret'] = $this->t('Secret');
     $header['access_token'] = $this->t('Access token  ');
@@ -50,7 +50,7 @@ class AccountListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    $row['id'] = $entity->id();
+    $row['api_key'] = $entity->getApiKey();
     $row['label'] = $entity->link();
     $row['secret'] = $entity->getSecret();
     $row['access_token'] = $entity->getAccessToken();
@@ -100,7 +100,7 @@ class AccountListBuilder extends ConfigEntityListBuilder {
     }
     $build = parent::render();
     $build['table']['#empty'] = $this->t('No constant contact accounts. <a href=":link">Add account</a>.', [
-      ':link' => Url::fromRoute('constant_contact.constant_contact_account_add')->toString()
+      ':link' => Url::fromRoute('entity.constant_contact_account.add_form')->toString()
     ]);
     return $build;
   }

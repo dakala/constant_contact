@@ -82,7 +82,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function getAccountInfo(AccountInterface $account) {
-    $api_key = $account->id();
+    $api_key = $account->getApiKey();
     $cid = 'constant_contact:account:' . $api_key;
 
     $data = NULL;
@@ -138,7 +138,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function putAccountInfo(AccountInterface $account, AccountInfo $account_info) {
-    $cc = new ConstantContact($account->id());
+    $cc = new ConstantContact($account->getApiKey());
     try {
       $data = $cc->accountService->updateAccountInfo($account->getAccessToken(), $account_info);
     } catch (Exception $e) {
@@ -152,7 +152,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return array|bool
    */
   public function getActivities(AccountInterface $account) {
-    $api_key = $account->id();
+    $api_key = $account->getApiKey();
     $cid = 'constant_contact:activities:' . $api_key;
 
     $data = NULL;
@@ -198,7 +198,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function getContactLists(AccountInterface $account) {
-    $api_key = $account->id();
+    $api_key = $account->getApiKey();
     $cid = 'constant_contact:contact_lists:' . $api_key;
 
     $data = NULL;
@@ -261,7 +261,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function putContactList(AccountInterface $account, ContactList $list) {
-    $cc = new ConstantContact($account->id());
+    $cc = new ConstantContact($account->getApiKey());
     try {
       $data = $cc->listService->updateList($account->getAccessToken(), $list);
     } catch (Exception $e) {
@@ -277,7 +277,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function getContacts(AccountInterface $account, $listid = NULL) {
-    $api_key = $account->id();
+    $api_key = $account->getApiKey();
     $cid = 'constant_contact:contacts:' . $api_key;
     $cid .= ($listid) ? ':' . $listid : '';
 
@@ -309,7 +309,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function createContactList(AccountInterface $account, ContactList $list) {
-    $cc = new ConstantContact($account->id());
+    $cc = new ConstantContact($account->getApiKey());
     try {
       $data = $cc->listService->addList($account->getAccessToken(), $list);
     } catch (Exception $e) {
@@ -325,7 +325,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function deleteContactList(AccountInterface $account, $listid) {
-    $cc = new ConstantContact($account->id());
+    $cc = new ConstantContact($account->getApiKey());
     try {
       $data = $cc->listService->deleteList($account->getAccessToken(), $listid);
     } catch (Exception $e) {
@@ -360,7 +360,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function createContact(AccountInterface $account, Contact $contact, $actionByContact = FALSE) {
-    $cc = new ConstantContact($account->id());
+    $cc = new ConstantContact($account->getApiKey());
     try {
       $data = $cc->contactService->addContact($account->getAccessToken(), $contact, $actionByContact);
     } catch (Exception $e) {
@@ -377,7 +377,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function putContact(AccountInterface $account, Contact $contact, $actionByContact = FALSE) {
-    $cc = new ConstantContact($account->id());
+    $cc = new ConstantContact($account->getApiKey());
     try {
       $data = $cc->contactService->updateContact($account->getAccessToken(), $contact, $actionByContact);
     } catch (Exception $e) {
@@ -393,7 +393,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function exportContactsActivity(AccountInterface $account, ExportContacts $exportContacts) {
-    $cc = new ConstantContact($account->id());
+    $cc = new ConstantContact($account->getApiKey());
     try {
       $data = $cc->activityService->addExportContactsActivity($account->getAccessToken(), $exportContacts);
     } catch (Exception $e) {
@@ -409,7 +409,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function importContactsActivity(AccountInterface $account, AddContacts $addContacts) {
-    $cc = new ConstantContact($account->id());
+    $cc = new ConstantContact($account->getApiKey());
     try {
       $data = $cc->activityService->createAddContactsActivity($account->getAccessToken(), $addContacts);
     } catch (Exception $e) {
@@ -427,7 +427,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function importContactsActivityFromFile(AccountInterface $account, $fileName, $fileLocation, $lists) {
-    $cc = new ConstantContact($account->id());
+    $cc = new ConstantContact($account->getApiKey());
     try {
       $data = $cc->activityService->createAddContactsActivityFromFile($account->getAccessToken(), $fileName, $fileLocation, $lists);
     } catch (Exception $e) {
@@ -442,7 +442,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function unsubscribeContact(AccountInterface $account, $contactId) {
-    $cc = new ConstantContact($account->id());
+    $cc = new ConstantContact($account->getApiKey());
     try {
       $data = $cc->contactService->unsubscribeContact($account->getAccessToken(), $contactId);
     } catch (Exception $e) {

@@ -72,7 +72,7 @@ class ContactRemoveForm extends ConfirmFormBase {
     $this->contact->lists = [];
     \Drupal::service('constant_contact.manager')->putContact($this->account, $this->contact);
 
-    \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contacts:' . $this->account->id());
+    \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contacts:' . $this->account->getApiKey());
 
     $this->logger('constant_contact')->info('Contact: %label removed from all lists by %user', [
       '%label' => $this->contact->email_addresses[0]->email_address,

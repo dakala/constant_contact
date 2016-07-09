@@ -143,7 +143,7 @@ class AccountInfoForm extends FormBase {
       ]);
 
       // Cache is stale.
-      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:account:' . $this->account->id());
+      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:account:' . $this->account->getApiKey());
 
       $message = $this->t('Updated account %label.', ['%label' => $this->account->label()]);
     }

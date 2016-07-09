@@ -5,6 +5,7 @@ namespace Drupal\constant_contact;
 use Ctct\Components\Account\AccountInfo;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
  * Form controller for profile type forms.
@@ -25,22 +26,37 @@ class AccountForm extends EntityForm {
       $form['#title'] = $this->t('Edit %label account', ['%label' => $entity->label()]);
     }
 
-    $form['api_key'] = [
-      '#title' => t('API key'),
-      '#type' => 'textfield',
-      '#default_value' => $entity->id(),
-      '#required' => TRUE,
-    ];
     $form['application'] = [
       '#title' => t('Application'),
       '#type' => 'textfield',
       '#default_value' => $entity->label(),
     ];
+
+    $form['id'] = [
+      '#type' => 'machine_name',
+      '#default_value' => $entity->id(),
+      '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
+      '#disabled' => $entity->id(),
+      '#machine_name' => [
+        'exists' => ['Drupal\constant_contact\Entity\Account::load'],
+        'source' => ['application'],
+      ],
+      '#description' => t('A unique machine-readable name for this account. It must only contain lowercase letters, numbers, and underscores. This name is only used internally.'),
+    ];
+
+    $form['api_key'] = [
+      '#title' => t('API key'),
+      '#type' => 'textfield',
+      '#default_value' => $entity->getApiKey(),
+      '#required' => TRUE,
+    ];
+
     $form['secret'] = [
       '#title' => t('Secret'),
       '#type' => 'textfield',
       '#default_value' => $entity->getSecret(),
     ];
+
     $form['access_token'] = [
       '#title' => t('Access token'),
       '#type' => 'textfield',

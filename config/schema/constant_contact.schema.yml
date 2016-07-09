@@ -2,6 +2,9 @@ constant_contact.account.*:
   type: config_entity
   label: 'Constant Contact account settings'
   mapping:
+    id:
+      type: string
+      label: 'Machine-readable name'
     api_key:
       type: string
       label: 'API key'

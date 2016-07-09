@@ -1,5 +1,5 @@
-constant_contact.constant_contact_account_add:
-  route_name: constant_contact.constant_contact_account_add
+entity.constant_contact_account.add_form:
+  route_name: entity.constant_contact_account.add_form
   title: 'Add account'
   appears_on:
     - entity.constant_contact_account.collection
