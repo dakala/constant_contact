@@ -1,0 +1,113 @@
+uuid: ca858a2d-9150-4288-880c-964486b67c86
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.profile.main.field_address_business
+    - field.field.profile.main.field_address_personal
+    - field.field.profile.main.field_cell_phone
+    - field.field.profile.main.field_company_name
+    - field.field.profile.main.field_fax
+    - field.field.profile.main.field_first_name
+    - field.field.profile.main.field_home_phone
+    - field.field.profile.main.field_job_title
+    - field.field.profile.main.field_last_name
+    - field.field.profile.main.field_prefix_name
+    - field.field.profile.main.field_remark
+    - field.field.profile.main.field_work_phone
+    - profile.type.main
+  module:
+    - address
+id: profile.main.default
+targetEntityType: profile
+bundle: main
+mode: default
+content:
+  field_address_business:
+    weight: 3
+    settings:
+      default_country: null
+    third_party_settings: {  }
+    type: address_default
+  field_address_personal:
+      weight: 3
+      settings:
+        default_country: null
+      third_party_settings: {  }
+      type: address_default
+  field_cell_phone:
+    weight: 6
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  field_company_name:
+    weight: 8
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  field_fax:
+    weight: 7
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  field_first_name:
+    weight: 1
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  field_home_phone:
+    weight: 4
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  field_job_title:
+    weight: 9
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  field_last_name:
+    weight: 2
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  field_prefix_name:
+    weight: 0
+    settings:
+      size: 4
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  field_remark:
+    weight: 10
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  field_work_phone:
+    weight: 5
+    settings:
+      size: 50
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  langcode:
+    type: language_select
+    weight: 11
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

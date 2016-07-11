@@ -1,0 +1,68 @@
+<?php
+
+/**
+ * @file
+ * Contains install and update functions for Constant Contact Profile module.
+ */
+
+use Drupal\field\Entity\FieldConfig;
+
+/**
+ * Implements hook_install().
+ */
+function constant_contact_profile_install() {
+  // Do field mappings.
+  $ids = \Drupal::entityQuery('field_config')
+    ->condition('id', "profile.main.", 'STARTS_WITH')
+    ->execute();
+  // Fetch all main profile fields.
+  $field_configs = FieldConfig::loadMultiple($ids);
+  foreach ($field_configs as $field_instance) {
+    switch($field_instance->getName()) {
+      case 'field_first_name':
+        $field_instance->setThirdPartySetting('constant_contact', 'cc_contact',  'first_name');
+        $field_instance->save();
+        break;
+
+      case 'field_last_name':
+        $field_instance->setThirdPartySetting('constant_contact', 'cc_contact',  'last_name');
+        $field_instance->save();
+        break;
+
+      case 'field_prefix_name':
+        $field_instance->setThirdPartySetting('constant_contact', 'cc_contact',  'prefix_name');
+        $field_instance->save();
+        break;
+
+      case 'field_company_name':
+        $field_instance->setThirdPartySetting('constant_contact', 'cc_contact',  'company_name');
+        $field_instance->save();
+        break;
+
+      case 'field_job_title':
+        $field_instance->setThirdPartySetting('constant_contact', 'cc_contact',  'job_title');
+        $field_instance->save();
+        break;
+
+      case 'field_address':
+        $field_instance->setThirdPartySetting('constant_contact', 'cc_contact',  'address');
+        $field_instance->save();
+        break;
+
+      case 'field_home_phone':
+        $field_instance->setThirdPartySetting('constant_contact', 'cc_contact',  'home_phone');
+        $field_instance->save();
+        break;
+
+      case 'field_cell_phone':
+        $field_instance->setThirdPartySetting('constant_contact', 'cc_contact',  'cell_phone');
+        $field_instance->save();
+        break;
+
+      case 'field_fax':
+        $field_instance->setThirdPartySetting('constant_contact', 'cc_contact',  'fax');
+        $field_instance->save();
+        break;
+    }
+  }
+}

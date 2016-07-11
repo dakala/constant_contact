@@ -1,0 +1,24 @@
+uuid: dd0b0bd5-9965-43a6-9186-f0bd1827f8f8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_remark
+    - profile.type.main
+  module:
+    - constant_contact
+third_party_settings:
+  constant_contact:
+    cc_contact: CustomField1
+id: profile.main.field_remark
+field_name: field_remark
+entity_type: profile
+bundle: main
+label: Remark
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

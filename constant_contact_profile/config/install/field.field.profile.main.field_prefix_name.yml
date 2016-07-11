@@ -1,0 +1,24 @@
+uuid: ff6bfe2b-52c0-4969-90a6-6f4e476267c9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_prefix_name
+    - profile.type.main
+  module:
+    - constant_contact
+third_party_settings:
+  constant_contact:
+    cc_contact: prefix_name
+id: profile.main.field_prefix_name
+field_name: field_prefix_name
+entity_type: profile
+bundle: main
+label: Salutation
+description: 'Personal title e.g. (Mr., Ms., Sir, Mrs., Dr., etc)'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

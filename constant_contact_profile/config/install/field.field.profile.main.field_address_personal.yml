@@ -1,0 +1,38 @@
+uuid: 515a72ed-288c-4451-9f5e-bdcfad3e6cca
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_address_personal
+    - profile.type.main
+  module:
+    - address
+    - constant_contact
+third_party_settings:
+  constant_contact:
+    cc_contact: address
+    cc_address_type: PERSONAL
+id: profile.main.field_address_personal
+field_name: field_address_personal
+entity_type: profile
+bundle: main
+label: Address (Personal)
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  available_countries: {  }
+  fields:
+    administrativeArea: administrativeArea
+    locality: locality
+    postalCode: postalCode
+    addressLine1: addressLine1
+    addressLine2: addressLine2
+    dependentLocality: '0'
+    sortingCode: '0'
+    organization: '0'
+    recipient: '0'
+  langcode_override: ''
+field_type: address

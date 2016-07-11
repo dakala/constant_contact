@@ -1,0 +1,19 @@
+uuid: 1aff6f51-f134-4202-85b6-4898c8854698
+langcode: en
+status: true
+dependencies:
+  module:
+    - address
+    - profile
+id: profile.field_address_personal
+field_name: field_address_personal
+entity_type: profile
+type: address
+settings: {  }
+module: address
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,38 @@
+uuid: 464bb94e-7e72-4739-bafe-7d7f0b4ce579
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_address_business
+    - profile.type.main
+  module:
+    - address
+    - constant_contact
+third_party_settings:
+  constant_contact:
+    cc_contact: address
+    cc_address_type: BUSINESS
+id: profile.main.field_address_business
+field_name: field_address_business
+entity_type: profile
+bundle: main
+label: Address (Business)
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  available_countries: {  }
+  fields:
+    administrativeArea: administrativeArea
+    locality: locality
+    postalCode: postalCode
+    addressLine1: addressLine1
+    addressLine2: addressLine2
+    dependentLocality: '0'
+    sortingCode: '0'
+    organization: '0'
+    recipient: '0'
+  langcode_override: ''
+field_type: address

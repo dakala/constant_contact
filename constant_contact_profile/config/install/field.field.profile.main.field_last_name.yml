@@ -1,0 +1,24 @@
+uuid: ca218327-564d-4dc5-8477-c07620e4708f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.profile.field_last_name
+    - profile.type.main
+  module:
+    - constant_contact
+third_party_settings:
+  constant_contact:
+    cc_contact: last_name
+id: profile.main.field_last_name
+field_name: field_last_name
+entity_type: profile
+bundle: main
+label: 'Last name'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

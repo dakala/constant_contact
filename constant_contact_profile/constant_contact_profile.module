@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains general module functions.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function constant_contact_profile_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the constant_contact_profile module.
+    case 'help.page.constant_contact_profile':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Sets up and configures a Contact profile for the Constant Contact integration module.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
