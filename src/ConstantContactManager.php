@@ -47,11 +47,6 @@ class ConstantContactManager implements ConstantContactManagerInterface {
   protected $connection;
 
   /**
-   * Cache expires after 1hr.
-   */
-  const CC_CACHE_EXPIRE = 3600;
-
-  /**
    * Name of cache bin service to use.
    */
   const CC_CACHE_BIN = 'constant_contact';
@@ -98,7 +93,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       }
 
       if ($data instanceof AccountInfo) {
-        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + self::CC_CACHE_EXPIRE);
+        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + $this->configFactory->get('constant_contact.settings')->get('cc_cache_expire_default'));
       }
     }
     return $data;
@@ -125,7 +120,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       }
 
       if ($data instanceof AccountInfo) {
-        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + self::CC_CACHE_EXPIRE);
+        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + $this->configFactory->get('constant_contact.settings')->get('cc_cache_expire_default'));
       }
     }
     return $data;
@@ -168,7 +163,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       }
 
       if ($data[0] instanceof Activity) {
-        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + self::CC_CACHE_EXPIRE);
+        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + $this->configFactory->get('constant_contact.settings')->get('cc_cache_expire_default'));
       }
     }
     return $data;
@@ -214,7 +209,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       }
 
       if ($data[0] instanceof ContactList) {
-        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + self::CC_CACHE_EXPIRE);
+        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + $this->configFactory->get('constant_contact.settings')->get('cc_cache_expire_default'));
       }
     }
     return $data;
@@ -296,7 +291,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       }
 
       if ($data[0] instanceof Contact) {
-        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + self::CC_CACHE_EXPIRE);
+        \Drupal::cache(self::CC_CACHE_BIN)->set($cid, $data, REQUEST_TIME + $this->configFactory->get('constant_contact.settings')->get('cc_cache_expire_default'));
       }
     }
     return $data;
