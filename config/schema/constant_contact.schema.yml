@@ -22,6 +22,36 @@ constant_contact.settings:
   type: config_object
   label: 'Constant Contact settings'
   mapping:
-    address_provider:
+    cc_address_provider:
       type: string
-      label: 'Address provider'
+      label: 'The module that manages contact addresses'
+    cc_profile_type:
+      type: string
+      label: 'The profile type for contact details'
+    cc_signup_title:
+      type: string
+      label: 'Title on subscription form'
+    cc_signup_description:
+      type: string
+      label: 'Description on subscription form'
+    cc_show_format_choice:
+      type: boolean
+      label: 'Display email format options to users'
+    cc_format_default:
+      type: string
+      label: 'Default email format'
+    cc_opt_in_default:
+      type: boolean
+      label: 'Opt-in users to mailing lists by default'
+    cc_contact_list_sort_field:
+      type: string
+      label: 'Contact list field to sort by'
+    cc_contact_list_sort_direction:
+      type: string
+      label: 'Direction of sorting the contact list'
+    cc_cache_expire_default:
+      type: integer
+      label: 'How long to keep data in the cache'
+    cc_sync_users:
+      type: boolean
+      label: 'Sync users with Constant Contact'

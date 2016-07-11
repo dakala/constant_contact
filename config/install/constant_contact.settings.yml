@@ -1,2 +1,11 @@
-profile_type: main
-address_provider: address
+cc_profile_type: main
+cc_address_provider: address
+cc_signup_title: 'Subscribe to the Newsletter'
+cc_signup_description: 'Select your areas of interest.'
+cc_show_format_choice: 1
+cc_format_default: HTML
+cc_opt_in_default: 0
+cc_contact_list_sort_field: id
+cc_contact_list_sort_direction: ASC
+cc_cache_expire_default: 3600
+cc_sync_users: 1
