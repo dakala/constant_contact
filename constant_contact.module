@@ -25,7 +25,7 @@ function constant_contact_help($route_name, RouteMatchInterface $route_match) {
       return $output;
 
     case 'constant_contact.settings':
-      return '<p>' . t('TODO:') . '</p>';
+      return '<p>' . t('Configure Drupal system settings and how you interact with the Constant Contact API.') . '</p>';
 
     case 'constant_contact_account.add':
       return '<p>' . t('These account details are issued and managed by Constant Contact') . '</p>';
@@ -280,4 +280,27 @@ function constant_contact_address_types($include_empty = FALSE) {
   $fields['BUSINESS'] = 'BUSINESS';
   $fields['PERSONAL'] = 'PERSONAL';
   return $fields;
+}
+
+/**
+ * Implements hook_contact_address_info().
+ */
+function constant_contact_contact_address_info() {
+    return [
+      'address' => [
+        'address_line1' => 'line1',
+        'address_line2' => 'line2',
+        'locality' => 'city',
+        'administrative_area' => 'state',
+        'postal_code' => 'postal_code',
+        'country_code' => 'country_code',
+      ],
+      'simpleaddress' => [
+        'streetAddress' => 'line1',
+        'addressLocality' => 'city',
+        'addressRegion' => 'state',
+        'postalCode' => 'postal_code',
+        'addressCountry' => 'country_code',
+      ],
+    ];
 }
