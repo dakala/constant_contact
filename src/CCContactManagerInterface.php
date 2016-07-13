@@ -13,6 +13,7 @@ use Ctct\ConstantContact;
 use CtCt\Components\Account\AccountInfo;
 use Ctct\Components\Contacts\ContactList;
 use Ctct\Components\Contacts\Contact;
+use Ctct\Components\Contacts\EmailAddress;
 use Ctct\Components\Activities\ExportContacts;
 use Ctct\Components\Activities\AddContacts;
 use Drupal\constant_contact\AccountInterface as CCAccountInterface;
@@ -37,7 +38,7 @@ interface CCContactManagerInterface {
 
   public function createContact(UserAccountInterface $account, array $values);
 
-  public function getEmailAddress(UserAccountInterface $account);
+  public function getEmailAddress($account);
 
   public function getAddress($type, array $value);
 }

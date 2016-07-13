@@ -145,11 +145,15 @@ class CCContactManager implements CCContactManagerInterface {
   /**
    * @inheritdoc
    */
-  public function getEmailAddress(UserAccountInterface $account) {
+  public function getEmailAddress($account) {
     $current_user = \Drupal::currentUser();
+
+    $email = ($account instanceof UserAccountInterface) ? $account->getEmail() : $account;
+
     return [
-      'email_address' => $account->getEmail(),
-      'opt_in_source' =>  $current_user->getEmail() == $account->getEmail() ? 'ACTION_BY_VISITOR' : 'ACTION_BY_OWNER',
+      'email_address' => $email,
+      'opt_in_source' =>  $current_user->getEmail() == $email ? 'ACTION_BY_VISITOR' : 'ACTION_BY_OWNER',
+      'opt_in_date' => date(DATE_ISO8601, REQUEST_TIME),
     ];
   }
 

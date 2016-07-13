@@ -5,6 +5,7 @@ namespace Drupal\constant_contact\Form;
 use Ctct\Components\Account\AccountInfo;
 use Ctct\Components\Contacts\ContactList;
 use Ctct\Components\Contacts\Contact;
+use Ctct\Components\Contacts\EmailAddress;
 use Drupal\constant_contact\AccountInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
@@ -168,10 +169,12 @@ class ContactForm extends FormBase {
     $contact->confirmed = (bool) $values['confirmed'];
     $contact->status = trim($values['status']);
 
-    //$contact->addEmail(trim($form_state->getValue('email_address')));
     foreach(array_keys($values['lists']) as $list) {
       $contact->addList($list);
     }
+
+    $emailAddress = EmailAddress::create(\Drupal::service('constant_contact.contact.manager')->getEmailAddress(trim($values['email_address'])));
+    $contact->addEmail($emailAddress);
 
     /*
      * The third parameter of addContact defaults to false, but if this were set to true it would tell Constant
@@ -180,11 +183,14 @@ class ContactForm extends FormBase {
      *
      * See: http://developer.constantcontact.com/docs/contacts-api/contacts-index.html#opt_in
      */
+
+    $isCurrentUser = \Drupal::currentUser()->getEmail() == trim($values['email_address']);
+
     if($this->id) {
-      $returnContact = $this->constantContactManager->putContact($this->account, $contact, TRUE);
+      $returnContact = $this->constantContactManager->putContact($this->account, $contact, $isCurrentUser);
     }
     else {
-      $returnContact = $this->constantContactManager->createContact($this->account, $contact, TRUE);
+      $returnContact = $this->constantContactManager->createContact($this->account, $contact, $isCurrentUser);
     }
 
     if ($returnContact instanceof Contact) {
