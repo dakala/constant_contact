@@ -49,6 +49,12 @@ class ConstantContactSettingsForm extends ConfigFormBase {
       '#description' => $this->t('This will also appear on the registration form, if enabled and the block.'),
     ];
 
+    $form['subscriptions']['cc_signup_registration'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Allow users to subscribe to mailing lists at registration.'),
+      '#default_value' => $config->get('cc_signup_registration'),
+    ];
+
     $formats = ['HTML', 'Text'];
     $form['subscriptions']['cc_format_default'] = [
       '#type' => 'select',
@@ -115,6 +121,24 @@ class ConstantContactSettingsForm extends ConfigFormBase {
       '#description' => $this->t('The name of the module managing addresses for contacts. e.g. SimpleAddress, Address'),
     ];
 
+    $form['contacts']['cc_source'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Source'),
+      '#default_value' => $config->get('cc_source'),
+      '#size' => 30,
+      '#max_length' => 30,
+      '#description' => $this->t('Describes how the contact was added, from an application, web page, etc.'),
+    ];
+
+    $form['contacts']['cc_source_details'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Source details'),
+      '#default_value' => $config->get('cc_source_details'),
+      '#size' => 30,
+      '#max_length' => 30,
+      '#description' => $this->t('Name of the application that added the contact, if contact was added using the API.'),
+    ];
+
     $form['system'] = [
       '#type' => 'details',
       '#title' => $this->t('System'),
@@ -170,6 +194,7 @@ class ConstantContactSettingsForm extends ConfigFormBase {
     \Drupal::configFactory()->getEditable('constant_contact.settings')
       ->set('cc_signup_title', $values['cc_signup_title'])
       ->set('cc_signup_description', $values['cc_signup_description'])
+      ->set('cc_signup_registration', $values['cc_signup_registration'])
       ->set('cc_show_format_choice', $values['cc_show_format_choice'])
       ->set('cc_format_default', $values['cc_format_default'])
       ->set('cc_opt_in_default', $values['cc_opt_in_default'])
@@ -177,6 +202,8 @@ class ConstantContactSettingsForm extends ConfigFormBase {
       ->set('cc_contact_list_sort_direction', $values['cc_contact_list_sort_direction'])
       ->set('cc_profile_type', strtolower($values['cc_profile_type']))
       ->set('cc_address_provider', strtolower($values['cc_address_provider']))
+      ->set('cc_source_details', strtolower($values['cc_source']))
+      ->set('cc_source_details', strtolower($values['cc_source_details']))
       ->set('cc_cache_expire_default', $values['cc_cache_expire_default'])
       ->set('cc_sync_users', $values['cc_sync_users'])
       ->save();

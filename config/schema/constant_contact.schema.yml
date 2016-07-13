@@ -28,12 +28,21 @@ constant_contact.settings:
     cc_profile_type:
       type: string
       label: 'The profile type for contact details'
+    cc_source:
+      type: string
+      label: 'How a contact was added'
+    cc_source_details:
+      type: string
+      label: 'The application used to add the contact'
     cc_signup_title:
       type: string
       label: 'Title on subscription form'
     cc_signup_description:
       type: string
       label: 'Description on subscription form'
+    cc_signup_registration:
+      type: booelan
+      label: 'Users can subscribe to mailing lists at registration'
     cc_show_format_choice:
       type: boolean
       label: 'Display email format options to users'
