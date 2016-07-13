@@ -112,11 +112,10 @@ class ContactForm extends FormBase {
     ];
 
     $form['lists'] = [
-      '#type' => 'select',
-      '#options' => $this->constantContactManager->getContactListsOptions($constant_contact_account, TRUE),
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Mailing lists'),
+      '#options' => $this->constantContactManager->getContactListsOptions($constant_contact_account, FALSE),
       '#default_value' => !empty($contact) ? $this->constantContactManager->getListIdsForContact($contact->lists) : '',
-      '#multiple' => TRUE,
-      '#title' => $this->t('Lists'),
     ];
 
     // disabled in edit mode.
@@ -161,14 +160,16 @@ class ContactForm extends FormBase {
       $contact->created_date = $now;
     }
 
+    $values = $form_state->getValues();
+
     $contact->modified_date = $now;
-    $contact->first_name = trim($form_state->getValue('first_name'));
-    $contact->last_name = trim($form_state->getValue('last_name'));
-    $contact->confirmed = (bool) $form_state->getValue('confirmed');
-    $contact->status = trim($form_state->getValue('status'));
+    $contact->first_name = trim($values['first_name']);
+    $contact->last_name = trim($values['last_name']);
+    $contact->confirmed = (bool) $values['confirmed'];
+    $contact->status = trim($values['status']);
 
     //$contact->addEmail(trim($form_state->getValue('email_address')));
-    foreach($form_state->getValue('lists') as $list) {
+    foreach(array_keys($values['lists']) as $list) {
       $contact->addList($list);
     }
 
