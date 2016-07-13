@@ -171,12 +171,18 @@ class CCContactManager implements CCContactManagerInterface {
     return $address;
   }
 
+  /**
+   * @inheritdoc
+   */
   public function isContact($email) {
     $account = \Drupal::service('constant_contact.manager')->getConstantContactAccount();
     $cc = new ConstantContact($account->getApiKey());
     return $cc->contactService->getContacts($account->getApiKey(), array("email" => $email));
   }
 
+  /**
+   * @inheritdoc
+   */
   public function createNewContact(array $contact, UserAccountInterface $account) {
     return \Drupal::service('constant_contact.manager')->createContact(
       \Drupal::service('constant_contact.manager')->getConstantContactAccount(),
@@ -185,6 +191,9 @@ class CCContactManager implements CCContactManagerInterface {
     );
   }
 
+  /**
+   * @inheritdoc
+   */
   public function updateOldContact(array $values, $response, UserAccountInterface $account) {
     $contact = $response->results[0];
     if($contact instanceof Contact) {

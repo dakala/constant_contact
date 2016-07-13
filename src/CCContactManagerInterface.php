@@ -41,4 +41,11 @@ interface CCContactManagerInterface {
   public function getEmailAddress($account);
 
   public function getAddress($type, array $value);
+
+  public function isContact($email);
+
+  public function createNewContact(array $contact, UserAccountInterface $account);
+
+  public function updateOldContact(array $values, $response, UserAccountInterface $account);
+
 }
