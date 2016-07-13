@@ -8,6 +8,11 @@ services:
     arguments: ['@config.factory', '@entity.manager', '@database', '@string_translation']
     tags:
       - { name: backend_overridable }
+  constant_contact.contact.manager:
+      class: Drupal\constant_contact\CCContactManager
+      arguments: ['@config.factory', '@entity.manager', '@database', '@string_translation']
+      tags:
+        - { name: backend_overridable }
   cache.constant_contact:
     class: Drupal\Core\Cache\CacheBackendInterface
     tags:
