@@ -15,6 +15,7 @@ use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\constant_contact\Entity\Account;
 use Ctct\Components\Activities\ExportContacts;
 use Ctct\Components\Activities\AddContacts;
 use Exception;
@@ -614,6 +615,25 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       }
     }
     return $listNames;
+  }
+
+  /**
+   * Get all available contact lists.
+   * @return array
+   */
+  public function getAllContactLists() {
+    $lists = [];
+    $accounts = Account::loadMultiple();
+    foreach ($accounts as $account) {
+       $lists += $this->getContactListsOptions($account);
+    }
+
+    return $lists;
+  }
+
+  public function getConstantContactAccount() {
+    $accounts = Account::loadMultiple();
+    return reset($accounts);
   }
 
 }
