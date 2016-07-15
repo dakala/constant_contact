@@ -169,7 +169,7 @@ class ContactForm extends FormBase {
     $contact->confirmed = (bool) $values['confirmed'];
     $contact->status = trim($values['status']);
 
-    foreach (array_keys($values['lists']) as $list) {
+    foreach (array_keys(array_filter($values['lists'])) as $list) {
       $contact->addList((string) $list);
     }
 

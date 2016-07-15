@@ -161,7 +161,7 @@ class CCContactManager implements CCContactManagerInterface {
     $contact->source = $this->configFactory->get('constant_contact.settings')->get('cc_source');
     $contact->source_details = $this->configFactory->get('constant_contact.settings')->get('cc_source_details');
 
-    foreach (array_keys($values['cc_contact_lists']) as $list) {
+    foreach (array_keys(array_filter($values['cc_contact_lists'])) as $list) {
       $contact->addList((string) $list);
     }
 
