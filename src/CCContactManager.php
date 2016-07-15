@@ -10,11 +10,12 @@ namespace Drupal\constant_contact;
 
 use Ctct\Components\Activities\Activity;
 use Ctct\ConstantContact;
-use CtCt\Components\Account\AccountInfo;
+use Ctct\Components\Account\AccountInfo;
 use Ctct\Components\Contacts\ContactList;
 use Ctct\Components\Contacts\Contact;
 use Ctct\Components\Activities\ExportContacts;
 use Ctct\Components\Activities\AddContacts;
+use Ctct\Components\Contacts\EmailAddress;
 use Drupal\constant_contact\AccountInterface as CCAccountInterface;
 use Drupal\Core\Session\AccountInterface as UserAccountInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -114,35 +115,100 @@ class CCContactManager implements CCContactManagerInterface {
    * @inheritdoc
    */
   public function createContact(UserAccountInterface $account, array $values) {
-    $contact = [];
+    $now = date(DATE_ISO8601, REQUEST_TIME);
+
+    $response = $this->isContact($account->getEmail());
+    if (empty($response->results)) {
+      $contact = new Contact();
+      $contact->created_date = $now;
+    }
+    else {
+      $contact = $response->results[0];
+    }
 
     $entity_key = 'entity_' . $this->configFactory->get('constant_contact.settings')->get('cc_profile_type');
     $mappings = $this->getFieldMappings();
     foreach ($mappings as $field => $mapping) {
-      if ($field == 'addresses') {
-        foreach ($mapping as $address_field) {
-          foreach($address_field as $type => $value)  {
-            $contact[$field][] = $this->getAddress($type, $values[$entity_key][$value][0]);
+
+      switch (TRUE) {
+        case ($field == 'addresses'):
+          foreach ($mapping as $address_field) {
+            foreach($address_field as $type => $value)  {
+              if (!empty($values[$entity_key][$value][0])) {
+                $contact->{$field}[] = $this->getAddress($type, $values[$entity_key][$value][0]);
+              }
+            }
           }
-        }
-      }
-      else {
-        $contact[$field] = !empty($values[$entity_key][$mapping]) ? $values[$entity_key][$mapping][0]['value'] : '';
+          break;
+
+        case (strpos($field, 'CustomField') !== FALSE):
+            $contact->custom_fields[] = [
+              'name' => $field,
+              'value' => $values[$entity_key][$mapping][0]['value'],
+            ];
+          break;
+
+        default:
+          if (!empty($values[$entity_key][$mapping])) {
+            $contact->{$field} =  $values[$entity_key][$mapping][0]['value'];
+          }
       }
     }
 
-    $contact['email_addresses'][] = $this->getEmailAddress($account);
-    $contact['lists'] =  array_keys($values['cc_contact_lists']);
-    $contact['source'] = $this->configFactory->get('constant_contact.settings')->get('cc_source');
-    $contact['source_details'] = $this->configFactory->get('constant_contact.settings')->get('cc_source_details');
+    $contact->status = 'ACTIVE';
+    $contact->confirmed = TRUE;
+    $contact->modified_date = $now;
+    $contact->source = $this->configFactory->get('constant_contact.settings')->get('cc_source');
+    $contact->source_details = $this->configFactory->get('constant_contact.settings')->get('cc_source_details');
 
-    $returnContact =  (empty($response = $this->isContact($account->getEmail())))  ?
-      $this->createNewContact($contact, $account) : $this->updateOldContact($contact, $response, $account);
+    foreach (array_keys($values['cc_contact_lists']) as $list) {
+      $contact->addList((string) $list);
+    }
+
+    $emailAddress = new \stdClass();
+    $emailAddress->email_address = $account->getEmail();
+    $contact->email_addresses = [$emailAddress];
+
+    $isCurrentUser = \Drupal::currentUser()->getEmail() == $account->getEmail();
+    $ccAccount = \Drupal::service('constant_contact.manager')->getConstantContactAccount();
+
+    $returnContact = (!empty($response->results)) ?
+      \Drupal::service('constant_contact.manager')->putContact($ccAccount, $contact, $isCurrentUser) :
+      \Drupal::service('constant_contact.manager')->createContact($ccAccount, $contact, $isCurrentUser);
+
+    if ($returnContact instanceof Contact) {
+      $name = $returnContact->first_name . ' ' . $returnContact->last_name;
+
+      if(!empty($response->results)) {
+        \Drupal::service('logger.factory')->get('constant_contact')->info('Contact: %label updated by %user', [
+          '%label' => $name,
+          '%user' => \Drupal::currentUser()->getAccountName(),
+        ]);
+        $message = t('Updated contact: %label.', ['%label' => $name]);
+      }
+      else {
+        \Drupal::service('logger.factory')->get('constant_contact')->info('Contact: %label created by %user', [
+          '%label' => $name,
+          '%user' => \Drupal::currentUser()->getAccountName(),
+        ]);
+        $message = t('Created contact: %label.', ['%label' => $name]);
+      }
+
+      // Cache is stale.
+      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contacts:' . $ccAccount->getApiKey());
+    }
+    else {
+      $message = t('Contact operation failed.');
+    }
+
+    drupal_set_message($message);
 
     return $returnContact;
   }
 
   /**
+   * @deprecated
+   *
    * @inheritdoc
    */
   public function getEmailAddress($account) {
@@ -164,7 +230,7 @@ class CCContactManager implements CCContactManagerInterface {
     $address = [];
     $mappings = $this->getAddressFieldMappings();
     foreach ($mappings as $field => $mapping) {
-      $address[$field] = $value[$mapping];
+      $address[$field] = !empty($value[$mapping]) ? $value[$mapping] : '';
     }
     $address['address_type'] = $type;
 
@@ -177,37 +243,7 @@ class CCContactManager implements CCContactManagerInterface {
   public function isContact($email) {
     $account = \Drupal::service('constant_contact.manager')->getConstantContactAccount();
     $cc = new ConstantContact($account->getApiKey());
-    return $cc->contactService->getContacts($account->getApiKey(), array("email" => $email));
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function createNewContact(array $contact, UserAccountInterface $account) {
-    return \Drupal::service('constant_contact.manager')->createContact(
-      \Drupal::service('constant_contact.manager')->getConstantContactAccount(),
-      Contact::create($contact),
-      \Drupal::currentUser()->getEmail() == $account->getEmail()
-    );
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public function updateOldContact(array $values, $response, UserAccountInterface $account) {
-    $contact = $response->results[0];
-    if($contact instanceof Contact) {
-       foreach($values as $field => $value) {
-         if($field != 'email_addresses') {
-           $contact->{$field} = $value;
-         }
-       }
-      return \Drupal::service('constant_contact.manager')->putContact(
-        \Drupal::service('constant_contact.manager')->getConstantContactAccount(),
-        $contact,
-        \Drupal::currentUser()->getEmail() == $account->getEmail()
-      );
-    }
+    return $cc->contactService->getContacts($account->getAccessToken(), ["email" => $email]);
   }
 
 }

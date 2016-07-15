@@ -355,7 +355,7 @@ function constant_contact_contact_lists_form(&$form, FormStateInterface $form_st
     '#default_value' => \Drupal::config('constant_contact.settings')->get('cc_format_default'),
   ];
 
-  $form['actions']['submit']['#validate'][] = 'constant_contact_form_user_register_form_validate';
+  //$form['actions']['submit']['#validate'][] = 'constant_contact_form_user_register_form_validate';
   $form['actions']['submit']['#submit'][] = 'constant_contact_form_user_register_form_submit';
 }
 
@@ -371,5 +371,5 @@ function constant_contact_form_user_register_form_submit(array &$form, FormState
 
   /** @var \Drupal\Core\Session\AccountInterface $account */
   $account = $form_state->getFormObject()->getEntity();
-  \Drupal::service('constant_contact.contact.manager')->createContact($account, $values);
+  $returnContact = \Drupal::service('constant_contact.contact.manager')->createContact($account, $values);
 }

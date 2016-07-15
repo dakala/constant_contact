@@ -169,12 +169,13 @@ class ContactForm extends FormBase {
     $contact->confirmed = (bool) $values['confirmed'];
     $contact->status = trim($values['status']);
 
-    foreach(array_keys($values['lists']) as $list) {
-      $contact->addList($list);
+    foreach (array_keys($values['lists']) as $list) {
+      $contact->addList((string) $list);
     }
 
-    $emailAddress = EmailAddress::create(\Drupal::service('constant_contact.contact.manager')->getEmailAddress(trim($values['email_address'])));
-    $contact->addEmail($emailAddress);
+    $emailAddress = new \stdClass();
+    $emailAddress->email_address = trim($values['email_address']);
+    $contact->email_addresses = [$emailAddress];
 
     /*
      * The third parameter of addContact defaults to false, but if this were set to true it would tell Constant

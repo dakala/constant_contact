@@ -374,6 +374,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    */
   public function putContact(AccountInterface $account, Contact $contact, $actionByContact = FALSE) {
     $cc = new ConstantContact($account->getApiKey());
+
     try {
       $data = $cc->contactService->updateContact($account->getAccessToken(), $contact, $actionByContact);
     } catch (Exception $e) {

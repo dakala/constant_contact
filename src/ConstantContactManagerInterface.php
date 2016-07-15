@@ -3,9 +3,9 @@
 
 namespace Drupal\constant_contact;
 
-use CtCt\Components\Account\AccountInfo;
-use CtCt\Components\Contacts\ContactList;
-use CtCt\Components\Contacts\Contact;
+use Ctct\Components\Account\AccountInfo;
+use Ctct\Components\Contacts\ContactList;
+use Ctct\Components\Contacts\Contact;
 use Ctct\Components\Activities\ExportContacts;
 use Ctct\Components\Activities\AddContacts;
 
