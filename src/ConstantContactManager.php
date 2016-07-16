@@ -15,7 +15,7 @@ use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\constant_contact\Entity\Account;
+use Drupal\constant_contact\Entity\Account as CCAccount;
 use Ctct\Components\Activities\ExportContacts;
 use Ctct\Components\Activities\AddContacts;
 use Exception;
@@ -624,7 +624,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    */
   public function getAllContactLists() {
     $lists = [];
-    $accounts = Account::loadMultiple();
+    $accounts = CCAccount::loadMultiple();
     foreach ($accounts as $account) {
        $lists += $this->getContactListsOptions($account);
     }
@@ -632,9 +632,36 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     return $lists;
   }
 
-  public function getConstantContactAccount() {
-    $accounts = Account::loadMultiple();
-    return reset($accounts);
+  /**
+   *  Get the Constant Account users sign up to at registration.
+   *
+   * @return \Drupal\constant_contact\AccountInterface
+   */
+  public function getSignupAccount() {
+    $accounID = \Drupal::config('constant_contact.settings')->get('cc_signup_account');
+    return CCAccount::load($accounID);
+  }
+
+  /**
+   * Get array of all Constant Contact accounts keyed by ID.
+   *
+   * @param null $accounts
+   * @param bool $empty
+   * @return array
+   */
+  public function getAccountOptions($accounts = NULL, $empty = TRUE) {
+    $options = [];
+    if ($accounts === NULL || !is_array($accounts)) {
+      if ($empty) {
+        $options[0] = t('- Select -');
+      }
+
+      foreach ($accounts as $account) {
+        $options[$account->id()] = $account->getApplication();
+      }
+    }
+
+    return $options;
   }
 
 }

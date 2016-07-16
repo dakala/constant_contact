@@ -40,6 +40,9 @@ constant_contact.settings:
     cc_signup_description:
       type: string
       label: 'Description on subscription form'
+    cc_signup_account:
+      type: string
+      label: 'Account to signup users to at registration'
     cc_signup_registration:
       type: booelan
       label: 'Users can subscribe to mailing lists at registration'

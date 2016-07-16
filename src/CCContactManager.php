@@ -170,7 +170,7 @@ class CCContactManager implements CCContactManagerInterface {
     $contact->email_addresses = [$emailAddress];
 
     $isCurrentUser = \Drupal::currentUser()->getEmail() == $account->getEmail();
-    $ccAccount = \Drupal::service('constant_contact.manager')->getConstantContactAccount();
+    $ccAccount = \Drupal::service('constant_contact.manager')->getSignupAccount();
 
     $returnContact = (!empty($response->results)) ?
       \Drupal::service('constant_contact.manager')->putContact($ccAccount, $contact, $isCurrentUser) :
@@ -213,7 +213,6 @@ class CCContactManager implements CCContactManagerInterface {
    */
   public function getEmailAddress($account) {
     $current_user = \Drupal::currentUser();
-
     $email = ($account instanceof UserAccountInterface) ? $account->getEmail() : $account;
 
     return [
@@ -241,7 +240,7 @@ class CCContactManager implements CCContactManagerInterface {
    * @inheritdoc
    */
   public function isContact($email) {
-    $account = \Drupal::service('constant_contact.manager')->getConstantContactAccount();
+    $account = \Drupal::service('constant_contact.manager')->getSignupAccount();
     $cc = new ConstantContact($account->getApiKey());
     return $cc->contactService->getContacts($account->getAccessToken(), ["email" => $email]);
   }

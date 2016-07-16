@@ -18,6 +18,8 @@ interface ConstantContactManagerInterface {
 
   public function putAccountInfo(AccountInterface $account, AccountInfo $account_info);
 
+  public function getAccountOptions($accounts = NULL);
+
   public function getContactLists(AccountInterface $account);
 
   public function getContactListsOptions(AccountInterface $account, $empty);

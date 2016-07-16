@@ -4,6 +4,7 @@ namespace Drupal\constant_contact\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\constant_contact\Entity\Account;
 
 /**
  * Configure Constant Contact settings for this site.
@@ -36,18 +37,38 @@ class ConstantContactSettingsForm extends ConfigFormBase {
       '#collapsible' => TRUE,
       '#open' => TRUE,
     ];
+
     $form['subscriptions']['cc_signup_title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Signup title'),
       '#default_value' => $config->get('cc_signup_title'),
       '#description' => $this->t('This will appear on the registration form, if enabled and the block.'),
     ];
+
     $form['subscriptions']['cc_signup_description'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Signup title'),
       '#default_value' => $config->get('cc_signup_description'),
       '#description' => $this->t('This will also appear on the registration form, if enabled and the block.'),
     ];
+
+    $ccAccounts = Account::loadMultiple();
+    if (count($ccAccounts) > 1) {
+      $form['subscriptions']['cc_signup_account'] = [
+        '#type' => 'select',
+        '#options' => \Drupal::service('constant_contact.manager')->getAccountOptions($ccAccounts),
+        '#title' => t('Constant Contact Account'),
+        '#default_value' => \Drupal::config('constant_contact.settings')->get('cc_signup_account'),
+        '#description' => $this->t('Select the Constant Contact account that users signup to at registration.'),
+      ];
+    }
+    else {
+      $ccAccount = reset($ccAccounts);
+      $form['subscriptions']['cc_signup_account'] = [
+        '#type' => 'value',
+        '#value' => $ccAccount->id(),
+      ];
+    }
 
     $form['subscriptions']['cc_signup_registration'] = [
       '#type' => 'checkbox',
@@ -195,6 +216,7 @@ class ConstantContactSettingsForm extends ConfigFormBase {
       ->set('cc_signup_title', $values['cc_signup_title'])
       ->set('cc_signup_description', $values['cc_signup_description'])
       ->set('cc_signup_registration', $values['cc_signup_registration'])
+      ->set('cc_signup_account', $values['cc_signup_account'])
       ->set('cc_show_format_choice', $values['cc_show_format_choice'])
       ->set('cc_format_default', $values['cc_format_default'])
       ->set('cc_opt_in_default', $values['cc_opt_in_default'])
