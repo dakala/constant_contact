@@ -321,6 +321,18 @@ function constant_contact_form_user_register_form_alter(&$form, FormStateInterfa
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Add available contact list to the user edit form.
+ */
+function constant_contact_form_user_form_alter(&$form, FormStateInterface $form_state) {
+    if (!\Drupal::config('constant_contact.settings')->get('cc_signup_registration')) {
+        return;
+  }
+  constant_contact_contact_lists_form($form, $form_state);
+}
+
+/**
  * Get the mailing list subscription form.
  * @param $form
  * @param \Drupal\Core\Form\FormStateInterface $form_state
