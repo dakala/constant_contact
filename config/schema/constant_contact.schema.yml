@@ -46,12 +46,6 @@ constant_contact.settings:
     cc_signup_registration:
       type: booelan
       label: 'Users can subscribe to mailing lists at registration'
-    cc_show_format_choice:
-      type: boolean
-      label: 'Display email format options to users'
-    cc_format_default:
-      type: string
-      label: 'Default email format'
     cc_opt_in_default:
       type: boolean
       label: 'Opt-in users to mailing lists by default'

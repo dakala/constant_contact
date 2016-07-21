@@ -76,18 +76,6 @@ class ConstantContactSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('cc_signup_registration'),
     ];
 
-    $formats = ['HTML', 'Text'];
-    $form['subscriptions']['cc_format_default'] = [
-      '#type' => 'select',
-      '#options' => array_combine($formats, $formats),
-      '#title' => $this->t('Default email format'),
-      '#default_value' => $config->get('cc_format_default'),
-    ];
-    $form['subscriptions']['cc_show_format_choice'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Show email format choice to users.'),
-      '#default_value' => $config->get('cc_show_format_choice'),
-    ];
     $form['subscriptions']['cc_opt_in_default'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Opt-in users to your mailing lists by default.'),
@@ -217,8 +205,6 @@ class ConstantContactSettingsForm extends ConfigFormBase {
       ->set('cc_signup_description', $values['cc_signup_description'])
       ->set('cc_signup_registration', $values['cc_signup_registration'])
       ->set('cc_signup_account', $values['cc_signup_account'])
-      ->set('cc_show_format_choice', $values['cc_show_format_choice'])
-      ->set('cc_format_default', $values['cc_format_default'])
       ->set('cc_opt_in_default', $values['cc_opt_in_default'])
       ->set('cc_contact_list_sort_field', $values['cc_contact_list_sort_field'])
       ->set('cc_contact_list_sort_direction', $values['cc_contact_list_sort_direction'])

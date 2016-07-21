@@ -349,14 +349,6 @@ function constant_contact_contact_lists_form(&$form, FormStateInterface $form_st
     '#default_value' => \Drupal::config('constant_contact.settings')->get('cc_opt_in_default') ? array_keys($lists) : '',
   ];
 
-  $formats = ['HTML', 'Text'];
-  $form['constant_contact']['cc_format_option'] = [
-    '#type' => 'select',
-    '#options' => array_combine($formats, $formats),
-    '#title' => t('Preferred email format'),
-    '#default_value' => \Drupal::config('constant_contact.settings')->get('cc_format_default'),
-  ];
-
   $form['actions']['submit']['#submit'][] = 'constant_contact_form_user_register_form_submit';
 }
 

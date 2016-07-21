@@ -6,8 +6,6 @@ cc_signup_title: 'Subscribe to the Newsletter'
 cc_signup_description: 'Select your areas of interest.'
 cc_signup_account: ijed_drupal_integration
 cc_signup_registration: 1
-cc_show_format_choice: 1
-cc_format_default: HTML
 cc_opt_in_default: 0
 cc_contact_list_sort_field: id
 cc_contact_list_sort_direction: ASC
