@@ -245,4 +245,18 @@ class CCContactManager implements CCContactManagerInterface {
     return $cc->contactService->getContacts($account->getAccessToken(), ["email" => $email]);
   }
 
+  /**
+   * @inheritdoc
+   */
+  public function getListsByEmail($email) {
+    $lists = [];
+    $response = $this->isContact($email);
+    if (!empty($response->results) && !empty($response->results[0]->lists)) {
+        foreach ($response->results[0]->lists as $list) {
+           $lists[] = $list->id;
+        }
+    }
+    return $lists;
+  }
+
 }

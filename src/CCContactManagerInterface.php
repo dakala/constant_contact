@@ -44,4 +44,6 @@ interface CCContactManagerInterface {
 
   public function isContact($email);
 
+  public function getListsByEmail($email);
+
 }
