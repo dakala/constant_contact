@@ -123,7 +123,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       $data = $cache->data;
     }
     else {
-      $cc = new ConstantContact($api_key);
+      $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
       try {
         $data = $cc->accountService->getAccountInfo($access_token);
       } catch (Exception $e) {
@@ -144,7 +144,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function putAccountInfo(AccountInterface $account, AccountInfo $account_info) {
-    $cc = new ConstantContact($account->getApiKey());
+    $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
     try {
       $data = $cc->accountService->updateAccountInfo($account->getAccessToken(), $account_info);
     } catch (Exception $e) {
@@ -166,7 +166,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       $data = $cache->data;
     }
     else {
-      $cc = new ConstantContact($api_key);
+      $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
       try {
         $data = $cc->activityService->getActivities($this->ccAccount->getAccessToken());
       } catch (Exception $e) {
