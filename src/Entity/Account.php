@@ -13,86 +13,70 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   id = "constant_contact_account",
  *   label = @Translation("Constant Contact account"),
  *   class = "Drupal\constant_contact\Entity\Account",
- *   handlers = {
- *     "form" = {
- *        "default" = "Drupal\constant_contact\AccountForm",
- *        "delete" = "Drupal\constant_contact\Form\AccountDeleteForm"
- *     },
- *     "list_builder" = "Drupal\constant_contact\AccountListBuilder",
- *   },
  *   admin_permission = "administer constant contact",
  *   config_prefix = "account",
  *   entity_keys = {
- *     "id" = "id",
- *     "label" = "application",
- *   },
- *   links = {
- *     "add-form" = "/admin/config/constant_contact/account/add",
- *     "edit-form" = "/admin/config/constant_contact/account/{constant_contact_account}/edit",
- *     "delete-form" = "/admin/config/constant_contact/account/{constant_contact_account}/delete",
- *     "collection" = "/admin/config/constant_contact/account",
+ *     "id" = "drunonce"
  *   },
  *   config_export = {
- *     "id",
- *     "api_key",
- *     "application",
- *     "secret",
+ *     "drunonce",
+ *     "username",
  *     "access_token",
+ *     "token_type",
+ *     "expires_in",
+ *     "created_at",
+ *     "message"
  *   }
  * )
  */
 class Account extends ConfigEntityBase implements AccountInterface {
 
-  /**
-   * The machine name of this node type.
-   *
-   * @var string
-   */
   protected $id;
 
-  /**
-   * The API key.
-   *
-   * @var string
-   */
-  protected $api_key;
-
-
-  /**
-   * CC Application name.
-   *
-   * @var string
-   */
-  protected $application;
-
-  /**
-   * CC Secret
-   *
-   * @var string
-   */
-  protected $secret;
-
-  /**
-   * CC Access token.
-   *
-   * @var string
-   */
   protected $access_token;
 
+  protected $token_type;
+
+  protected $expires_in;
+
+  protected $drunonce;
+
+  protected $message;
+
+  protected $username;
+
+  protected $created_at;
 
   public function label() {
-    return $this->application;
+    return $this->drunonce;
   }
 
-  public function getApiKey() {
-    return $this->api_key;
+  public function getExpiresIn() {
+    return $this->expires_in;
   }
 
-  public function getSecret() {
-    return $this->secret;
+  public function getTokenType() {
+    return $this->token_type;
+  }
+
+  public function id() {
+    return $this->drunonce;
   }
 
   public function getAccessToken() {
     return $this->access_token;
   }
+
+  public function getMessage() {
+    return $this->message;
+  }
+
+  public function getUsername() {
+    return $this->username;
+  }
+
+  public function getCreatedAt() {
+     return $this->created_at;
+  }
+
 }

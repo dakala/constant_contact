@@ -12,8 +12,9 @@ use Drupal\Core\Url;
 
 class ContactListController extends ControllerBase {
 
-  public function index(AccountInterface $constant_contact_account) {
-    $lists = \Drupal::service('constant_contact.manager')->getContactLists($constant_contact_account);
+  public function index() {
+
+    $lists = \Drupal::service('constant_contact.manager')->getContactLists();
     $lists = $this->sortLists($lists);
 
     $header = \Drupal::service('constant_contact.manager')->normalizeFieldNames($lists[0]);
@@ -30,26 +31,26 @@ class ContactListController extends ControllerBase {
 
       $links['contacts'] = array(
         'title' => $this->t('Manage contacts'),
-        'url' => Url::fromRoute('constant_contact.contacts.collection', ['constant_contact_account' => $constant_contact_account->id(), 'listid' => $list->id]),
+        'url' => Url::fromRoute('constant_contact.contacts.collection', ['listid' => $list->id]),
       );
 
       $links['import'] = array(
         'title' => $this->t('Import contacts'),
-        'url' => Url::fromRoute('constant_contact.contacts.import', ['constant_contact_account' => $constant_contact_account->id(), 'listid' => $list->id]),
+        'url' => Url::fromRoute('constant_contact.contacts.import', ['listid' => $list->id]),
       );
 
       $links['export'] = array(
         'title' => $this->t('Export contacts'),
-        'url' => Url::fromRoute('constant_contact.contacts.export', ['constant_contact_account' => $constant_contact_account->id(), 'listid' => $list->id]),
+        'url' => Url::fromRoute('constant_contact.contacts.export', ['listid' => $list->id]),
       );
 
       $links['edit'] = [
         'title' => $this->t('Edit'),
-        'url' => Url::fromRoute('constant_contact.contact_list.edit', ['constant_contact_account' => $constant_contact_account->id(), 'listid' => $list->id]),
+        'url' => Url::fromRoute('constant_contact.contact_list.edit', ['listid' => $list->id]),
       ];
       $links['delete'] = array(
         'title' => $this->t('Delete'),
-        'url' => Url::fromRoute('constant_contact.contact_list.delete', ['constant_contact_account' => $constant_contact_account->id(), 'listid' => $list->id]),
+        'url' => Url::fromRoute('constant_contact.contact_list.delete', ['listid' => $list->id]),
       );
 
       $row[] = [
@@ -64,9 +65,7 @@ class ContactListController extends ControllerBase {
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#empty' => $this->t('No contact lists available. <a href=":link">Add contact list</a>.', [':link' => Url::fromRoute("constant_contact.contact_list.add", [
-        'constant_contact_account' => $constant_contact_account->id(),
-      ])]),
+      '#empty' => $this->t('No contact lists available. <a href=":link">Add contact list</a>.', [':link' => Url::fromRoute("constant_contact.contact_list.add")]),
     ];
 
     return $build;

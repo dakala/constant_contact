@@ -58,8 +58,8 @@ class ContactExportForm extends FormBase {
    * @return array
    *   The form structure.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, AccountInterface $constant_contact_account = NULL, $listid = NULL) {
-    $this->account = $constant_contact_account;
+  public function buildForm(array $form, FormStateInterface $form_state, $listid = NULL) {
+    $this->account = $this->constantContactManager->getCCAccount();
     $this->listid = $listid;
 
     /** Although (lists) this is an array, only one listId is supported. Specifies the
@@ -71,7 +71,7 @@ class ContactExportForm extends FormBase {
      */
     $form['lists'] = [
       '#type' => 'select',
-      '#options' => $this->getListOptions($constant_contact_account, TRUE),
+      '#options' => $this->getListOptions(TRUE),
       '#default_value' => !empty($listid) ? $listid : '',
       '#title' => $this->t('Lists'),
       '#required' => TRUE,
@@ -146,8 +146,8 @@ class ContactExportForm extends FormBase {
     $exportContacts->export_date_added = (bool) $form_state->getValue('export_date_added');
     $exportContacts->export_added_by = (bool) $form_state->getValue('export_added_by');
     $exportContacts->column_names = array_values($form_state->getValue('column_names'));
-    
-    $reports = $this->constantContactManager->exportContactsActivity($this->account, $exportContacts);
+
+    $reports = $this->constantContactManager->exportContactsActivity($exportContacts);
 
     if ($reports) {
       $this->logger('constant_contact')->info('Export contacts activity created by %user', ['%user' => \Drupal::currentUser()->getAccountName()]);
@@ -166,7 +166,7 @@ class ContactExportForm extends FormBase {
    * Submit handler for cancel button
    */
   public function standardCancel($form, FormStateInterface $form_state) {
-    $form_state->setRedirect('constant_contact.contacts.collection', ['constant_contact_account' => $this->account->id(), 'listid' => $this->listid]);
+    $form_state->setRedirect('constant_contact.contacts.collection', ['listid' => $this->listid]);
   }
 
   public function getColumnNames() {
@@ -214,9 +214,9 @@ class ContactExportForm extends FormBase {
     return array_combine($sortBy, $sortBy);
   }
 
-  public function getListOptions(AccountInterface $account, $empty = TRUE, $include_system = TRUE) {
+  public function getListOptions($empty = TRUE, $include_system = TRUE) {
     $system = ['active', 'opted-out', 'removed'];
-    $options = $this->constantContactManager->getContactListsOptions($account, $empty);
+    $options = $this->constantContactManager->getContactListsOptions($empty);
 
     if ($include_system) {
       $options += array_combine($system, array_map('strtoupper', $system));

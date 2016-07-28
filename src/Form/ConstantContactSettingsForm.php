@@ -31,11 +31,46 @@ class ConstantContactSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('constant_contact.settings');
 
+    $form['cc'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Constant Contact API'),
+      '#collapsible' => TRUE,
+      '#open' => TRUE,
+    ];
+
+    $form['cc']['cc_connect_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Connection URL'),
+      '#default_value' => $config->get('cc_connect_url'),
+      '#description' => $this->t('URL for connecting to a Constant Contact account.'),
+    ];
+
+    $form['cc']['cc_trial_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Account Trial URL'),
+      '#default_value' => $config->get('cc_trial_url'),
+      '#description' => $this->t('URL for Constant Contact trial account.'),
+    ];
+
+    $form['cc']['cc_marketing_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Marketing information URL'),
+      '#default_value' => $config->get('cc_marketing_url'),
+      '#description' => $this->t('URL for learning more about Constant Contact.'),
+    ];
+
+    $form['cc']['cc_status_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Status URL'),
+      '#default_value' => $config->get('cc_status_url'),
+      '#description' => $this->t('URL for checking Constant Contact service status.'),
+    ];
+
     $form['subscriptions'] = [
       '#type' => 'details',
       '#title' => $this->t('Subscriptions'),
       '#collapsible' => TRUE,
-      '#open' => TRUE,
+      '#open' => FALSE,
     ];
 
     $form['subscriptions']['cc_signup_title'] = [
@@ -51,24 +86,6 @@ class ConstantContactSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('cc_signup_description'),
       '#description' => $this->t('This will also appear on the registration form, if enabled and the block.'),
     ];
-
-    $ccAccounts = Account::loadMultiple();
-    if (count($ccAccounts) > 1) {
-      $form['subscriptions']['cc_signup_account'] = [
-        '#type' => 'select',
-        '#options' => \Drupal::service('constant_contact.manager')->getAccountOptions($ccAccounts),
-        '#title' => t('Constant Contact Account'),
-        '#default_value' => \Drupal::config('constant_contact.settings')->get('cc_signup_account'),
-        '#description' => $this->t('Select the Constant Contact account that users signup to at registration.'),
-      ];
-    }
-    else {
-      $ccAccount = reset($ccAccounts);
-      $form['subscriptions']['cc_signup_account'] = [
-        '#type' => 'value',
-        '#value' => $ccAccount->id(),
-      ];
-    }
 
     $form['subscriptions']['cc_signup_registration'] = [
       '#type' => 'checkbox',
@@ -204,7 +221,6 @@ class ConstantContactSettingsForm extends ConfigFormBase {
       ->set('cc_signup_title', $values['cc_signup_title'])
       ->set('cc_signup_description', $values['cc_signup_description'])
       ->set('cc_signup_registration', $values['cc_signup_registration'])
-      ->set('cc_signup_account', $values['cc_signup_account'])
       ->set('cc_opt_in_default', $values['cc_opt_in_default'])
       ->set('cc_contact_list_sort_field', $values['cc_contact_list_sort_field'])
       ->set('cc_contact_list_sort_direction', $values['cc_contact_list_sort_direction'])
@@ -214,6 +230,7 @@ class ConstantContactSettingsForm extends ConfigFormBase {
       ->set('cc_source_details', strtolower($values['cc_source_details']))
       ->set('cc_cache_expire_default', $values['cc_cache_expire_default'])
       ->set('cc_sync_users', $values['cc_sync_users'])
+      ->set('cc_status_url', $values['cc_status_url'])
       ->save();
 
     parent::submitForm($form, $form_state);

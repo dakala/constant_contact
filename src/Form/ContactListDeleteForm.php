@@ -36,7 +36,7 @@ class ContactListDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete the @list list from the %account account?', array('%account' => $this->account->label(), '@list' => $this->listId));
+    return $this->t('Are you sure you want to delete the @list list?', array('@list' => $this->listId));
   }
 
   /**
@@ -50,7 +50,7 @@ class ContactListDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('constant_contact.contact_list.collection', ['constant_contact_account' => $this->account->id()]);
+    return new Url('constant_contact.contact_list.collection');
   }
 
   /**
@@ -63,9 +63,8 @@ class ContactListDeleteForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, AccountInterface $constant_contact_account = NULL, $listid = NULL) {
-    $this->account = $constant_contact_account;
-    $this->list = \Drupal::service('constant_contact.manager')->getContactList($constant_contact_account, $listid);
+  public function buildForm(array $form, FormStateInterface $form_state, $listid = NULL) {
+    $this->list = \Drupal::service('constant_contact.manager')->getContactList($listid);
 
     return parent::buildForm($form, $form_state);
   }
@@ -74,9 +73,9 @@ class ContactListDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    \Drupal::service('constant_contact.manager')->deleteContactList($this->account, $this->list->id);
-
-    \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contact_lists:' . $this->account->getApiKey());
+    $ccAccount = \Drupal::service('constant_contact.manager')->getCCAccount();
+    \Drupal::service('constant_contact.manager')->deleteContactList($this->list->id);
+    \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contact_lists:' . $ccAccount->id());
 
     $this->logger('constant_contact')->info('Contact list: %label deleted by %user', [
       '%label' => $this->list->name,
@@ -84,7 +83,7 @@ class ContactListDeleteForm extends ConfirmFormBase {
     ]);
     drupal_set_message($this->t('The Contact list %name has been deleted.', array('%name' => $this->list->name)));
 
-    $form_state->setRedirect('constant_contact.contact_list.collection', ['constant_contact_account' => $this->account->id()]);
+    $form_state->setRedirect('constant_contact.contact_list.collection');
   }
 
 }

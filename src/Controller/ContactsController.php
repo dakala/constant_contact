@@ -17,8 +17,8 @@ class ContactsController extends ControllerBase {
    * @param null $listid
    * @return mixed
    */
-  public function index(AccountInterface $constant_contact_account, $listid = NULL) {
-    $contacts = \Drupal::service('constant_contact.manager')->getContacts($constant_contact_account, $listid);
+  public function index($listid = NULL) {
+    $contacts = \Drupal::service('constant_contact.manager')->getContacts($listid);
 
     $fields = $this->getFields();
     $header = \Drupal::service('constant_contact.manager')->normalizeFieldNamesArray($fields);
@@ -33,23 +33,23 @@ class ContactsController extends ControllerBase {
 
       $links['view'] = array(
         'title' => $this->t('View'),
-        'url' => Url::fromRoute('constant_contact.contact.view', ['constant_contact_account' => $constant_contact_account->id(), 'id' => $contact->id]),
+        'url' => Url::fromRoute('constant_contact.contact.view', ['id' => $contact->id]),
       );
 
       $links['edit'] = [
         'title' => $this->t('Edit'),
-        'url' => Url::fromRoute('constant_contact.contact.edit', ['constant_contact_account' => $constant_contact_account->id(), 'id' => $contact->id]),
+        'url' => Url::fromRoute('constant_contact.contact.edit', ['id' => $contact->id]),
       ];
 
       $links['remove'] = [
         'title' => $this->t('Remove'),
-        'url' => Url::fromRoute('constant_contact.contact.remove', ['constant_contact_account' => $constant_contact_account->id(), 'id' => $contact->id]),
+        'url' => Url::fromRoute('constant_contact.contact.remove', ['id' => $contact->id]),
       ];
 
       if ($contact->status != 'OPTOUT') {
         $links['unsubscribe'] = array(
           'title' => $this->t('Unsubscribe'),
-          'url' => Url::fromRoute('constant_contact.contact.unsubscribe', ['constant_contact_account' => $constant_contact_account->id(), 'id' => $contact->id]),
+          'url' => Url::fromRoute('constant_contact.contact.unsubscribe', ['id' => $contact->id]),
         );
       }
 
@@ -66,9 +66,7 @@ class ContactsController extends ControllerBase {
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#empty' => $this->t('No contacts available. <a href=":link">Add contact</a>.', [':link' => Url::fromRoute("constant_contact.contact_list.add", [
-        'constant_contact_account' => $constant_contact_account->id(),
-      ])]),
+      '#empty' => $this->t('No contacts available. <a href=":link">Add contact</a>.', [':link' => Url::fromRoute("constant_contact.contact_list.add")]),
     ];
 
     return $build;

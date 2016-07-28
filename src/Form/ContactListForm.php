@@ -5,6 +5,7 @@ namespace Drupal\constant_contact\Form;
 use Ctct\Components\Account\AccountInfo;
 use Ctct\Components\Contacts\ContactList;
 use Drupal\constant_contact\AccountInterface;
+use Drupal\constant_contact\Entity\Account;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\FormBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -53,21 +54,14 @@ class ContactListForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, AccountInterface $constant_contact_account = NULL, $listid = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, $listid = NULL) {
     // Set variables.
-    $this->account = $constant_contact_account;
+    $this->account = $this->constantContactManager->getCCAccount();
     $this->listid = $listid;
 
-    $account_info = $this->constantContactManager->getAccountInfo($constant_contact_account);
-    if (!$account_info instanceof AccountInfo) {
-      return $form['message'] = [
-        '#type' => 'markup',
-        '#markup' => t('Account not found.')
-      ];
-    }
     $list = NULL;
     if ($listid) {
-      $list = $this->constantContactManager->getContactList($constant_contact_account, $listid);
+      $list = $this->constantContactManager->getContactList($listid);
     }
 
     $form['name'] = [
@@ -117,7 +111,7 @@ class ContactListForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $list = ($this->listid) ?
-      $this->constantContactManager->getContactList($this->account, $this->listid) :
+      $this->constantContactManager->getContactList($this->listid) :
       new ContactList();
 
     $now = date(DATE_ISO8601, REQUEST_TIME);
@@ -132,10 +126,10 @@ class ContactListForm extends FormBase {
     $list->modified_date = $now;
 
     if($this->listid) {
-      $returnList = $this->constantContactManager->putContactList($this->account, $list);
+      $returnList = $this->constantContactManager->putContactList($list);
     }
     else {
-      $returnList = $this->constantContactManager->createContactList($this->account, $list);
+      $returnList = $this->constantContactManager->createContactList($list);
     }
 
     if ($returnList instanceof ContactList) {
@@ -155,21 +149,21 @@ class ContactListForm extends FormBase {
       }
 
       // Cache is stale.
-      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contact_lists:' . $this->account->getApiKey());
+      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contact_lists:' . $this->account->id());
     }
     else {
       $message = $this->t('Contact list operation failed.');
     }
     drupal_set_message($message);
 
-    $form_state->setRedirect('constant_contact.contact_list.collection', ['constant_contact_account' => $this->account->id()]);
+    $form_state->setRedirect('constant_contact.contact_list.collection');
   }
 
   /**
    * Submit handler for cancel button
    */
   public function standardCancel($form, FormStateInterface $form_state) {
-    $form_state->setRedirect('constant_contact.contact_list.collection', ['constant_contact_account' => $this->account->id()]);
+    $form_state->setRedirect('constant_contact.contact_list.collection');
   }
 
 }

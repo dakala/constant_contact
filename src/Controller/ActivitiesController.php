@@ -34,8 +34,8 @@ class ActivitiesController extends ControllerBase {
    * @param \Drupal\constant_contact\AccountInterface $constant_contact_account
    * @return mixed
    */
-  public function index(AccountInterface $constant_contact_account) {
-    $activities = $this->constantContactManager->getActivities($constant_contact_account);
+  public function index() {
+    $activities = $this->constantContactManager->getActivities();
 
     $fields = $this->getFields();
     $header = \Drupal::service('constant_contact.manager')->normalizeFieldNamesArray($fields);
@@ -50,7 +50,7 @@ class ActivitiesController extends ControllerBase {
 
       $links['view'] = array(
         'title' => $this->t('View'),
-        'url' => Url::fromRoute('constant_contact.activities.view', ['constant_contact_account' => $constant_contact_account->id(), 'id' => $activity->id]),
+        'url' => Url::fromRoute('constant_contact.activities.view', ['id' => $activity->id]),
       );
 
       $row[] = [
@@ -77,8 +77,8 @@ class ActivitiesController extends ControllerBase {
    * @param $id
    * @return array
    */
-  public function view(AccountInterface $constant_contact_account, $id) {
-    $activity = \Drupal::service('constant_contact.manager')->getActivity($constant_contact_account, $id);
+  public function view($id) {
+    $activity = \Drupal::service('constant_contact.manager')->getActivity($id);
 
     return $build = [
       '#theme' => 'cc_activity',
@@ -99,7 +99,6 @@ class ActivitiesController extends ControllerBase {
       'contact_count',
     ];
   }
-
 
 
   public function todo() {

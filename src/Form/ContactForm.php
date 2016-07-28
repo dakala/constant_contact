@@ -55,20 +55,13 @@ class ContactForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, AccountInterface $constant_contact_account = NULL, $id = NULL) {
-    $this->account = $constant_contact_account;
+  public function buildForm(array $form, FormStateInterface $form_state, $id = NULL) {
+    $this->account = $this->constantContactManager->getCCAccount();
     $this->id = $id;
 
-    $account_info = $this->constantContactManager->getAccountInfo($constant_contact_account);
-    if (!$account_info instanceof AccountInfo) {
-      return $form['message'] = [
-        '#type' => 'markup',
-        '#markup' => t('Account not found.')
-      ];
-    }
     $contact = NULL;
     if ($id) {
-      $contact = $this->constantContactManager->getContact($constant_contact_account, $id);
+      $contact = $this->constantContactManager->getContact($id);
     }
 
     $form['first_name'] = [
@@ -115,7 +108,7 @@ class ContactForm extends FormBase {
     $form['lists'] = [
       '#type' => 'checkboxes',
       '#title' => $this->t('Mailing lists'),
-      '#options' => $this->constantContactManager->getContactListsOptions($constant_contact_account, FALSE),
+      '#options' => $this->constantContactManager->getContactListsOptions(FALSE),
       '#default_value' => !empty($contact) ? $this->constantContactManager->getListIdsForContact($contact->lists) : '',
     ];
 
@@ -152,7 +145,7 @@ class ContactForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $contact = ($this->id) ?
-      $this->constantContactManager->getContact($this->account, $this->id) :
+      $this->constantContactManager->getContact($this->id) :
       new Contact();
 
     $now = date(DATE_ISO8601, REQUEST_TIME);
@@ -188,10 +181,10 @@ class ContactForm extends FormBase {
     $isCurrentUser = \Drupal::currentUser()->getEmail() == trim($values['email_address']);
 
     if($this->id) {
-      $returnContact = $this->constantContactManager->putContact($this->account, $contact, $isCurrentUser);
+      $returnContact = $this->constantContactManager->putContact($contact, $isCurrentUser);
     }
     else {
-      $returnContact = $this->constantContactManager->createContact($this->account, $contact, $isCurrentUser);
+      $returnContact = $this->constantContactManager->createContact($contact, $isCurrentUser);
     }
 
     if ($returnContact instanceof Contact) {
@@ -212,21 +205,21 @@ class ContactForm extends FormBase {
       }
 
       // Cache is stale.
-      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contacts:' . $this->account->getApiKey());
+      \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contacts:' . $this->account->id());
     }
     else {
       $message = $this->t('Contact operation failed.');
     }
     drupal_set_message($message);
 
-    $form_state->setRedirect('constant_contact.contacts.collection', ['constant_contact_account' => $this->account->id()]);
+    $form_state->setRedirect('constant_contact.contacts.collection');
   }
 
   /**
    * Submit handler for cancel button
    */
   public function standardCancel($form, FormStateInterface $form_state) {
-    $form_state->setRedirect('constant_contact.contact_list.collection', ['constant_contact_account' => $this->account->id()]);
+    $form_state->setRedirect('constant_contact.contact_list.collection');
   }
 
   /**

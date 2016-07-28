@@ -7,6 +7,16 @@ constant_contact.admin_index:
   requirements:
     _permission: 'administer constant contact'
 
+constant_contact.link:
+  path: '/admin/config/constant_contact/link/{error}/{error_description}'
+  defaults:
+    _form: 'Drupal\constant_contact\Form\ConstantContactLinkForm'
+    _title: 'Constant Contact Link'
+    error: ''
+    error_description: ''
+  requirements:
+    _permission: 'administer constant contact'
+
 constant_contact.settings:
   path: '/admin/config/constant_contact/settings'
   defaults:
@@ -50,32 +60,32 @@ entity.constant_contact_account.delete_form:
 
 # manage CC account
 constant_contact.account.manage:
-  path: '/admin/config/constant_contact/account/{constant_contact_account}/manage'
+  path: '/admin/config/constant_contact/account/manage'
   defaults:
     _controller: 'Drupal\constant_contact\Controller\AccountController::accountInfo'
     _title_callback: '\Drupal\constant_contact\Controller\AccountController::title'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.account.edit:
-  path: '/admin/config/constant_contact/account/{constant_contact_account}/edit'
+  path: '/admin/config/constant_contact/account/edit'
   defaults:
     _form: '\Drupal\constant_contact\Form\AccountInfoForm'
     _title_callback: '\Drupal\constant_contact\Controller\AccountController::title'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 # contact lists
 constant_contact.contact_list.collection:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact_list'
+  path: '/admin/config/constant_contact/contact_list'
   defaults:
     _controller: 'Drupal\constant_contact\Controller\ContactListController::index'
     _title: 'Contact lists'
@@ -87,174 +97,182 @@ constant_contact.contact_list.collection:
     _permission: 'administer constant contact'
 
 constant_contact.contact_list.add:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact_list/add'
+  path: '/admin/config/constant_contact/contact_list/add'
   defaults:
     _form: '\Drupal\constant_contact\Form\ContactListForm'
     _title: 'Add Contact list'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.contact_list.edit:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact_list/{listid}/edit'
+  path: '/admin/config/constant_contact/contact_list/{listid}/edit'
   defaults:
     _form: '\Drupal\constant_contact\Form\ContactListForm'
     _title: 'Edit Contact list'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.contact_list.delete:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact_list/{listid}/delete'
+  path: '/admin/config/constant_contact/contact_list/{listid}/delete'
   defaults:
     _form: '\Drupal\constant_contact\Form\ContactListDeleteForm'
     _title: 'Delete Contact list'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 # contacts
 constant_contact.contacts.collection:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contacts/{listid}'
+  path: '/admin/config/constant_contact/contacts/{listid}'
   defaults:
     _controller: 'Drupal\constant_contact\Controller\ContactsController::index'
     _title: 'Contacts'
     listid: NULL
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.contact.add:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact/add'
+  path: '/admin/config/constant_contact/contact/add'
   defaults:
     _form: '\Drupal\constant_contact\Form\ContactForm'
     _title: 'Add contact'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.contact.view:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/view'
+  path: '/admin/config/constant_contact/contact/{id}/view'
   defaults:
     _controller: 'Drupal\constant_contact\Controller\ContactsController::view'
     _title: 'Contact'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.contact.edit:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/edit'
+  path: '/admin/config/constant_contact/contact/{id}/edit'
   defaults:
     _form: '\Drupal\constant_contact\Form\ContactForm'
     _title: 'Add contact'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.contact.unsubscribe:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/unsubscribe'
+  path: '/admin/config/constant_contact/contact/{id}/unsubscribe'
   defaults:
     _form: '\Drupal\constant_contact\Form\ContactUnsubscribeForm'
     _title: 'Unsubscribe contact'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.contact.remove:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact/{id}/remove'
+  path: '/admin/config/constant_contact/contact/{id}/remove'
   defaults:
     _form: '\Drupal\constant_contact\Form\ContactRemoveForm'
     _title: 'Remove contact'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.contacts.import:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact/import/{listid}'
+  path: '/admin/config/constant_contact/contact/import/{listid}'
   defaults:
     _form: 'Drupal\constant_contact\Form\ContactImportForm'
     _title: 'Import contacts'
     listid: NULL
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.contacts.export:
-  path: '/admin/config/constant_contact/{constant_contact_account}/contact/export/{listid}'
+  path: '/admin/config/constant_contact/contact/export/{listid}'
   defaults:
     _form: 'Drupal\constant_contact\Form\ContactExportForm'
     _title: 'Export contacts'
     listid: NULL
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 # activities
 constant_contact.activities.collection:
-  path: '/admin/config/constant_contact/{constant_contact_account}/activities'
+  path: '/admin/config/constant_contact/activities'
   defaults:
     _controller: 'Drupal\constant_contact\Controller\ActivitiesController::index'
     _title: 'Activities'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.activities.view:
-  path: '/admin/config/constant_contact/{constant_contact_account}/activities/{id}/view'
+  path: '/admin/config/constant_contact/activities/{id}/view'
   defaults:
     _controller: 'Drupal\constant_contact\Controller\ActivitiesController::view'
     _title: 'View activity'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
   requirements:
     _permission: 'administer constant contact'
 
 constant_contact.activities.download:
-  path: '/admin/config/constant_contact/{constant_contact_account}/activities/download'
+  path: '/admin/config/constant_contact/activities/download'
   defaults:
     _controller: 'Drupal\constant_contact\Controller\ActivitiesController::todo'
     _title: 'Download activities'
-  options:
-    parameters:
-      constant_contact_account:
-        type: constant_contact_account
+#  options:
+#    parameters:
+#      constant_contact_account:
+#        type: constant_contact_account
+  requirements:
+    _permission: 'administer constant contact'
+
+constant_contact.process_response:
+  path: '/ccpr'
+  defaults:
+    _controller: 'Drupal\constant_contact\CCOAuth2::processResponse'
+    _title: 'Process response'
   requirements:
     _permission: 'administer constant contact'

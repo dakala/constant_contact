@@ -7,14 +7,9 @@ use Ctct\ConstantContact;
 use CtCt\Components\Account\AccountInfo;
 use Ctct\Components\Contacts\ContactList;
 use Ctct\Components\Contacts\Contact;
-use Drupal\constant_contact\AccountInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\StringTranslation\TranslationInterface;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\Entity\FieldableEntityInterface;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\constant_contact\Entity\Account as CCAccount;
 use Ctct\Components\Activities\ExportContacts;
 use Ctct\Components\Activities\AddContacts;
@@ -47,6 +42,8 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    */
   protected $connection;
 
+  protected $ccAccount;
+
   /**
    * Name of cache bin service to use.
    */
@@ -68,17 +65,30 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     $this->configFactory = $config_factory;
     $this->entityManager = $entity_manager;
     $this->connection = $connection;
+    $this->setCCAccount();
+  }
+
+  public function setCCAccount() {
+    if (empty($this->ccAccount)) {
+      $accounts = CCAccount::loadMultiple();
+      if ($accounts) {
+        $this->ccAccount = current($accounts);
+      }
+    }
+  }
+
+  public function getCCAccount() {
+    return $this->ccAccount;
   }
 
   /**
-   * Get account information from cache or Constant Contact webservice.
+   * @deprecated
    *
-   * @param \Drupal\constant_contact\AccountInterface $account
-   * @return \Ctct\Components\Account\AccountInfo|null
-   * @throws \Ctct\Exceptions\CtctException
+   * Get account information from cache or Constant Contact webservice.
    */
-  public function getAccountInfo(AccountInterface $account) {
-    $api_key = $account->getApiKey();
+  public function getAccountInfo(CCAccount $account) {
+    $api_key = $account->id();
+
     $cid = 'constant_contact:account:' . $api_key;
 
     $data = NULL;
@@ -86,9 +96,9 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       $data = $cache->data;
     }
     else {
-      $cc = new ConstantContact($api_key);
+      $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
       try {
-        $data = $cc->accountService->getAccountInfo($account->getAccessToken());
+        $data = $cc->accountService->getAccountInfo(CCContactManager::CTCT_API_SECRET);
       } catch (Exception $e) {
         $data = FALSE;
       }
@@ -147,8 +157,8 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @param \Drupal\constant_contact\AccountInterface $account
    * @return array|bool
    */
-  public function getActivities(AccountInterface $account) {
-    $api_key = $account->getApiKey();
+  public function getActivities() {
+    $api_key = $this->ccAccount->id();
     $cid = 'constant_contact:activities:' . $api_key;
 
     $data = NULL;
@@ -158,7 +168,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     else {
       $cc = new ConstantContact($api_key);
       try {
-        $data = $cc->activityService->getActivities($account->getAccessToken());
+        $data = $cc->activityService->getActivities($this->ccAccount->getAccessToken());
       } catch (Exception $e) {
         $data = FALSE;
       }
@@ -175,9 +185,9 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @param $activityId
    * @return mixed|null
    */
-  public function getActivity(AccountInterface $account, $activityId) {
+  public function getActivity($activityId) {
     $returnActivity = NULL;
-    $activities = $this->getActivities($account);
+    $activities = $this->getActivities();
     foreach ($activities as $activity) {
       if ($activity->id == $activityId) {
         $returnActivity = $activity;
@@ -187,14 +197,13 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     return $returnActivity;
   }
 
-
   /**
    * @param \Drupal\constant_contact\AccountInterface $account
    * @return array|null
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function getContactLists(AccountInterface $account) {
-    $api_key = $account->getApiKey();
+  public function getContactLists() {
+    $api_key = $this->ccAccount->id();
     $cid = 'constant_contact:contact_lists:' . $api_key;
 
     $data = NULL;
@@ -202,9 +211,9 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       $data = $cache->data;
     }
     else {
-      $cc = new ConstantContact($api_key);
+      $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
       try {
-        $data = $cc->listService->getLists($account->getAccessToken());
+        $data = $cc->listService->getLists($this->ccAccount->getAccessToken());
       } catch (Exception $e) {
         $data = FALSE;
       }
@@ -220,13 +229,13 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @param \Drupal\constant_contact\AccountInterface $account
    * @return array
    */
-  public function getContactListsOptions(AccountInterface $account, $empty = FALSE) {
+  public function getContactListsOptions($empty = FALSE) {
     $options = [];
     if ($empty) {
       $options[0] = t('- Select -');
     }
 
-    $lists = $this->getContactLists($account);
+    $lists = $this->getContactLists();
     foreach($lists as $list) {
       $options[$list->id] = $list->name;
     }
@@ -238,9 +247,9 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @param $listid
    * @return mixed|null
    */
-  public function getContactList(AccountInterface $account, $listid) {
+  public function getContactList($listid) {
     $contact_list = NULL;
-    $lists = $this->getContactLists($account);
+    $lists = $this->getContactLists();
     foreach ($lists as $list) {
       if ($list->id == $listid) {
         $contact_list = $list;
@@ -256,10 +265,10 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return \Ctct\Components\Contacts\ContactList
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function putContactList(AccountInterface $account, ContactList $list) {
-    $cc = new ConstantContact($account->getApiKey());
+  public function putContactList(ContactList $list) {
+    $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
     try {
-      $data = $cc->listService->updateList($account->getAccessToken(), $list);
+      $data = $cc->listService->updateList($this->ccAccount->getAccessToken(), $list);
     } catch (Exception $e) {
       $data = FALSE;
     }
@@ -272,9 +281,8 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return \Ctct\Components\ResultSet
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function getContacts(AccountInterface $account, $listid = NULL) {
-    $api_key = $account->getApiKey();
-    $cid = 'constant_contact:contacts:' . $api_key;
+  public function getContacts($listid = NULL) {
+    $cid = 'constant_contact:contacts:' . $this->ccAccount->id();
     $cid .= ($listid) ? ':' . $listid : '';
 
     $data = NULL;
@@ -282,11 +290,11 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       $data = $cache->data;
     }
     else {
-      $cc = new ConstantContact($api_key);
+      $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
 
       try {
-        $data = ($listid) ? $cc->contactService->getContactsFromList($account->getAccessToken(), $listid)->results :
-          $cc->contactService->getContacts($account->getAccessToken())->results;
+        $data = ($listid) ? $cc->contactService->getContactsFromList($this->ccAccount->getAccessToken(), $listid)->results :
+          $cc->contactService->getContacts($this->ccAccount->getAccessToken())->results;
       } catch (Exception $e) {
         $data = FALSE;
       }
@@ -304,10 +312,10 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return \Ctct\Components\Contacts\ContactList
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function createContactList(AccountInterface $account, ContactList $list) {
-    $cc = new ConstantContact($account->getApiKey());
+  public function createContactList(ContactList $list) {
+    $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
     try {
-      $data = $cc->listService->addList($account->getAccessToken(), $list);
+      $data = $cc->listService->addList($this->ccAccount->getAccessToken(), $list);
     } catch (Exception $e) {
       $data = FALSE;
     }
@@ -320,10 +328,10 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return \Ctct\Components\Contacts\ContactList
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function deleteContactList(AccountInterface $account, $listid) {
-    $cc = new ConstantContact($account->getApiKey());
+  public function deleteContactList($listid) {
+    $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
     try {
-      $data = $cc->listService->deleteList($account->getAccessToken(), $listid);
+      $data = $cc->listService->deleteList($this->ccAccount->getAccessToken(), $listid);
     } catch (Exception $e) {
       $data = FALSE;
     }
@@ -336,9 +344,9 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return \Ctct\Components\Contacts\Contact
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function getContact(AccountInterface $account, $contactId) {
+  public function getContact($contactId) {
     $returnContact = NULL;
-    $contacts = $this->getContacts($account);
+    $contacts = $this->getContacts($this->ccAccount);
     foreach ($contacts as $contact) {
       if ($contact->id == $contactId) {
         $returnContact = $contact;
@@ -355,10 +363,10 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return \Ctct\Components\Contacts\Contact
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function createContact(AccountInterface $account, Contact $contact, $actionByContact = FALSE) {
-    $cc = new ConstantContact($account->getApiKey());
+  public function createContact(Contact $contact, $actionByContact = FALSE) {
+    $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
     try {
-      $data = $cc->contactService->addContact($account->getAccessToken(), $contact, $actionByContact);
+      $data = $cc->contactService->addContact($this->ccAccount->getAccessToken(), $contact, $actionByContact);
     } catch (Exception $e) {
       $data = FALSE;
     }
@@ -372,11 +380,11 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return \Ctct\Components\Contacts\Contact
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function putContact(AccountInterface $account, Contact $contact, $actionByContact = FALSE) {
-    $cc = new ConstantContact($account->getApiKey());
+  public function putContact(Contact $contact, $actionByContact = FALSE) {
+    $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
 
     try {
-      $data = $cc->contactService->updateContact($account->getAccessToken(), $contact, $actionByContact);
+      $data = $cc->contactService->updateContact($this->ccAccount->getAccessToken(), $contact, $actionByContact);
     } catch (Exception $e) {
       $data = FALSE;
     }
@@ -389,10 +397,10 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return array
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function exportContactsActivity(AccountInterface $account, ExportContacts $exportContacts) {
-    $cc = new ConstantContact($account->getApiKey());
+  public function exportContactsActivity(ExportContacts $exportContacts) {
+    $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
     try {
-      $data = $cc->activityService->addExportContactsActivity($account->getAccessToken(), $exportContacts);
+      $data = $cc->activityService->addExportContactsActivity($this->ccAccount->getAccessToken(), $exportContacts);
     } catch (Exception $e) {
       $data = FALSE;
     }
@@ -405,10 +413,10 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return array
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function importContactsActivity(AccountInterface $account, AddContacts $addContacts) {
-    $cc = new ConstantContact($account->getApiKey());
+  public function importContactsActivity(AddContacts $addContacts) {
+    $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
     try {
-      $data = $cc->activityService->createAddContactsActivity($account->getAccessToken(), $addContacts);
+      $data = $cc->activityService->createAddContactsActivity($this->ccAccount->getAccessToken(), $addContacts);
     } catch (Exception $e) {
       $data = FALSE;
     }
@@ -423,10 +431,10 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return \Ctct\Components\Activities\Activity
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function importContactsActivityFromFile(AccountInterface $account, $fileName, $fileLocation, $lists) {
-    $cc = new ConstantContact($account->getApiKey());
+  public function importContactsActivityFromFile($fileName, $fileLocation, $lists) {
+    $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
     try {
-      $data = $cc->activityService->createAddContactsActivityFromFile($account->getAccessToken(), $fileName, $fileLocation, $lists);
+      $data = $cc->activityService->createAddContactsActivityFromFile($this->ccAccount->getAccessToken(), $fileName, $fileLocation, $lists);
     } catch (Exception $e) {
       $data = FALSE;
     }
@@ -438,10 +446,10 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @param $contactId
    * @throws \Ctct\Exceptions\CtctException
    */
-  public function unsubscribeContact(AccountInterface $account, $contactId) {
-    $cc = new ConstantContact($account->getApiKey());
+  public function unsubscribeContact($contactId) {
+    $cc = new ConstantContact(CCContactManager::CTCT_API_KEY);
     try {
-      $data = $cc->contactService->unsubscribeContact($account->getAccessToken(), $contactId);
+      $data = $cc->contactService->unsubscribeContact($this->ccAccount->getAccessToken(), $contactId);
     } catch (Exception $e) {
       $data = FALSE;
     }
@@ -534,7 +542,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
       case 'notes': // TODO:
       case 'lists':
         if (!empty($object->{$field})) {
-          $listNames = $this->getListsForContact($object->{$field}, $account);
+          $listNames = $this->getListsForContact($object->{$field});
           $value = [
             'data' => [
               '#theme' => 'item_list',
@@ -606,10 +614,10 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @param \Drupal\constant_contact\AccountInterface $account
    * @return array
    */
-  public function getListsForContact(array $lists, AccountInterface $account) {
+  public function getListsForContact(array $lists) {
     $listNames = [];
     $listIds = $this->getListIdsForContact($lists);
-    $contactLists = $this->getContactLists($account);
+    $contactLists = $this->getContactLists();
     foreach ($contactLists as $contactList) {
       if (in_array($contactList->id, $listIds)) {
         $listNames[] = $contactList->name;
@@ -626,7 +634,7 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     $lists = [];
     $accounts = CCAccount::loadMultiple();
     foreach ($accounts as $account) {
-       $lists += $this->getContactListsOptions($account);
+       $lists += $this->getContactListsOptions();
     }
 
     return $lists;

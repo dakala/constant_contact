@@ -1,10 +1,13 @@
 cc_profile_type: main
 cc_address_provider: address
+cc_connect_url: 'https://oauth2.constantcontact.com/oauth2/oauth/siteowner/authorize'
+cc_trial_url: 'https://www.constantcontact.com/uk/email-trial/signup.jsp'
+cc_marketing_url: 'https://www.constantcontact.com/uk/email-marketing'
+cc_status_url: 'http://status.constantcontact.com/'
 cc_source: 'API'
-cc_source_details: 'iJEd Drupal integration'
+cc_source_details: 'Constant Contact API Drupal module'
 cc_signup_title: 'Subscribe to the Newsletter'
 cc_signup_description: 'Select your areas of interest.'
-cc_signup_account: ijed_drupal_integration
 cc_signup_registration: 1
 cc_opt_in_default: 0
 cc_contact_list_sort_field: id

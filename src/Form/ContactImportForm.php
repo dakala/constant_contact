@@ -36,6 +36,7 @@ class ContactImportForm extends FormBase{
    */
   public function __construct(ConstantContactManagerInterface $constant_contact_manager) {
     $this->constantContactManager = $constant_contact_manager;
+    $this->account = $this->constantContactManager->getCCAccount();
   }
 
   /**
@@ -53,7 +54,7 @@ class ContactImportForm extends FormBase{
    *   The unique string identifying the form.
    */
   public function getFormId() {
-    return 'contact-export';
+    return 'contact-import';
   }
 
   /**
@@ -67,8 +68,7 @@ class ContactImportForm extends FormBase{
    * @return array
    *   The form structure.
    */
-  public function buildForm(array $form, FormStateInterface $form_state, AccountInterface $constant_contact_account = NULL, $listid = NULL) {
-    $this->account = $constant_contact_account;
+  public function buildForm(array $form, FormStateInterface $form_state, $listid = NULL) {
     $this->listid = $listid;
 
     $form['upload'] = [
@@ -88,7 +88,7 @@ class ContactImportForm extends FormBase{
 
     $form['lists'] = [
       '#type' => 'select',
-      '#options' => $this->constantContactManager->getContactListsOptions($this->account, FALSE),
+      '#options' => $this->constantContactManager->getContactListsOptions(FALSE),
       '#default_value' => !empty($listid) ? $listid : '',
       '#title' => $this->t('Lists'),
       '#multiple' => TRUE,
@@ -118,6 +118,10 @@ class ContactImportForm extends FormBase{
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
+
+    // @todo: validate email addresses
+
+
       // Handle file uploads.
     $validators = ['file_validate_extensions' => ['csv']];
     // Check for a new uploaded CSV file.
@@ -160,11 +164,11 @@ class ContactImportForm extends FormBase{
       $column_names = ['EMAIL', 'FIRST NAME', 'LAST NAME'];
 
       $addContacts = new AddContacts($contacts, $lists, $column_names);
-      $returnedReport = $this->constantContactManager->importContactsActivity($this->account, $addContacts);
+      $returnedReport = $this->constantContactManager->importContactsActivity($addContacts);
     }
     else if (!empty($values['upload'])) {
       $file = $values['upload'];
-      $returnedReport = $this->constantContactManager->importContactsActivityFromFile($this->account, $file->getFilename(), $file->getFileUri(), implode(', ', $form_state->getValue('lists')));
+      $returnedReport = $this->constantContactManager->importContactsActivityFromFile($file->getFilename(), $file->getFileUri(), implode(', ', $form_state->getValue('lists')));
     }
 
     if ($returnedReport instanceof Activity) {
@@ -175,7 +179,7 @@ class ContactImportForm extends FormBase{
       $message = $this->t('Import activity creation failed.');
     }
 
-//    \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete('constant_contact:contacts:' . $this->account->id());
+    // Clear CC cache.
     \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->deleteAll();
 
     drupal_set_message($message);
@@ -187,7 +191,7 @@ class ContactImportForm extends FormBase{
    * Submit handler for cancel button
    */
   public function standardCancel($form, FormStateInterface $form_state) {
-    $form_state->setRedirect('constant_contact.contacts.collection', ['constant_contact_account' => $this->account->id(), 'listid' => $this->listid]);
+    $form_state->setRedirect('constant_contact.contacts.collection', ['listid' => $this->listid]);
   }
 
   /**

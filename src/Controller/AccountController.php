@@ -4,9 +4,6 @@ namespace Drupal\constant_contact\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\constant_contact\AccountInterface;
-use Ctct\ConstantContact;
-use GuzzleHttp;
-use Symfony\Component\HttpFoundation\Request;
 
 class AccountController extends ControllerBase {
 
@@ -34,12 +31,6 @@ class AccountController extends ControllerBase {
       '#fields' => \Drupal::service('constant_contact.manager')->convertObjectToArray($account_info),
     ];
   }
-
-
-
-
-
-
 
   public function todo(AccountInterface $constant_contact_account) {
     return $build = [

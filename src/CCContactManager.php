@@ -31,6 +31,10 @@ use Exception;
 
 class CCContactManager implements CCContactManagerInterface {
 
+  const CTCT_API_KEY = 'uv4bbfkbs3qsrcguhkc9zvdk';
+
+  const CTCT_API_SECRET  = 'daU7XyMzFzATxm7NSfj84mX4';
+
   /**
    * Group settings config object.
    *
@@ -56,6 +60,8 @@ class CCContactManager implements CCContactManagerInterface {
    * Name of cache bin service to use.
    */
   const CC_CACHE_BIN = 'constant_contact';
+
+  const CC_OAUTH_CACHE_KEY = 'ctct_oauth';
 
   /**
    * Constructs the group manager service.
