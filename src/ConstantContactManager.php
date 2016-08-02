@@ -86,11 +86,8 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    *
    * Get account information from cache or Constant Contact webservice.
    */
-  public function getAccountInfo(CCAccount $account) {
-    $api_key = $account->id();
-
-    $cid = 'constant_contact:account:' . $api_key;
-
+  public function getAccountInfo() {
+    $cid = 'constant_contact:account:' . $this->ccAccount->id();
     $data = NULL;
     if ($cache = \Drupal::cache(self::CC_CACHE_BIN)->get($cid)) {
       $data = $cache->data;
@@ -670,6 +667,15 @@ class ConstantContactManager implements ConstantContactManagerInterface {
     }
 
     return $options;
+  }
+
+  public function deleteAccountEntities() {
+    $accounts = CCAccount::loadMultiple();
+    if ($accounts) {
+      foreach ($accounts as $account) {
+        $account->delete();
+      }
+    }
   }
 
 }

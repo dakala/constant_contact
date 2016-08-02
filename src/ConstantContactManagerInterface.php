@@ -15,7 +15,7 @@ interface ConstantContactManagerInterface {
 
   public function getCCAccount();
 
-  public function getAccountInfo(CCAccount $account);
+  public function getAccountInfo();
 
   public function getAccountInfoFromData($api_key, $access_token);
 
@@ -60,5 +60,7 @@ interface ConstantContactManagerInterface {
   public function getActivities();
 
   public function getActivity($activityId);
+
+  public function deleteAccountEntities();
 
 }
