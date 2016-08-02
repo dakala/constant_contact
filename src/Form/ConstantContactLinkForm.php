@@ -23,6 +23,10 @@ class ConstantContactLinkForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $error = NULL, $error_description = NULL) {
 
     $config = \Drupal::config('constant_contact.settings');
+    $drunonce = user_password();
+    \Drupal::request()->attributes->set('drunonce', $drunonce);
+
+    $ccOauth2 = new CCOAuth2();
 
     $form['logo'] = [
       '#theme'  => 'image',
@@ -48,36 +52,19 @@ class ConstantContactLinkForm extends FormBase {
                           '<p>' . t('You may switch to a different ConstantContact account or deauthorise this application.')  . '</p>',
       ];
 
-      $form['link']['actions'] = ['#type' => 'actions'];
-      $form['link']['actions']['reauthorise'] = [
-        '#type' => 'button',
-        '#value' => t('Switch connected account'),
-        '#attributes' => ['class' => ['button', 'button--primary']],
-        '#ajax' => [
-          'callback' => '::reauthoriseConstantContact',
-          'event' => 'click',
-          'progress' => [
-            'type' => 'throbber',
-            'message' => t('Connecting to ConstantContact.com...'),
-          ],
-        ],
-      ];
-
       $form['link']['actions']['deauthorise'] = [
         '#type' => 'submit',
         '#value' => t('Deauthorise application'),
         '#attributes' => ['class' => ['button', 'button--danger']],
         '#account' => $account->id(),
+        '#prefix' => '<div>' . t('<a href=":cc-auth-url" class="button button--primary js-form-submit form-submit">Switch connected account</a>',
+            [':cc-auth-url' => $ccOauth2->getAuthorizationUrl()]),
+        '#suffix' => '</div>',
         '#submit' => ['::deAuthoriseAccountSubmit'],
       ];
 
     }
     else {
-      $drunonce = user_password();
-      \Drupal::request()->attributes->set('drunonce', $drunonce);
-
-      $ccOauth2 = new CCOAuth2();
-
       $form['link'] = [
         '#type'        => 'details',
         '#title'       => $this->t('Get Connected'),
