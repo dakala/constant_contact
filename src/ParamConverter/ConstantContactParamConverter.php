@@ -12,7 +12,6 @@ class ConstantContactParamConverter implements ParamConverterInterface {
    * @inheritdoc
    */
   public function convert($value, $definition, $name, array $defaults) {
-    kint($value);
     return Account::load($value);
   }
 
