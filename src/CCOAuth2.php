@@ -4,6 +4,7 @@
 
   use Ctct\Auth\CtctOAuth2;
   use Drupal\Core\Url;
+  use Drupal\Component\Utility\Html;
   use Drupal\constant_contact\Entity\Account;
   use Symfony\Component\HttpFoundation\RedirectResponse;
   use Symfony\Component\HttpFoundation\Request;
@@ -52,31 +53,27 @@
         $ccAccount = NULL;
         if(isset($_REQUEST['code'])) {
 
-          try {
-
-            $values = self::getInstance()->getAccessToken($_REQUEST['code']);
-            $values['message'] = '';
-
-//            self::getInstance()->saveToken($_REQUEST['drunonce'], $token);
-
-            //do_action('ctct_token_saved', $token);
-            //$admin_url = admin_url('admin.php?page=constant-contact-api&oauth=new');
-
-          } catch(Exception $e) {
-            $values['message'] =  $e->getMessage();
-
-//            // Delete configured setting, save error message
-//            self::getInstance()->saveToken($_REQUEST['drunonce'], $e->getMessage());
-          }
+          // We are ready for the new entity. Remove old one first.
+          \Drupal::service('constant_contact.manager')->deleteAccountEntities();
 
           $values['drunonce'] = $_REQUEST['drunonce'];
           $values['username'] = $_REQUEST['username'];
           $values['created_at'] = REQUEST_TIME;
 
-          $ccAccount = Account::create($values)->save();
+          try {
 
-          // Delete cached data
-          //self::getInstance()->deleteToken($values['drunonce']);
+            $request_code = Html::escape($_REQUEST['code']);
+            $values += self::getInstance()->getAccessToken($request_code);
+            $values['message'] = '';
+
+            $ccAccount = Account::create($values)->save();
+
+          } catch(Exception $e) {
+
+            $values['message'] =  $e->getMessage();
+            $ccAccount = Account::create($values)->save();
+
+          }
         }
 
         return new RedirectResponse(Url::fromRoute('constant_contact.link', ['ccAccount' => ($ccAccount) ? $ccAccount->id : '' ])->toString());
@@ -149,5 +146,4 @@
       $cid = 'constant_contact:' . CCContactManager::CC_OAUTH_CACHE_KEY . ':' . $drunonce;
       return (\Drupal::cache(CCContactManager::CC_CACHE_BIN)->get($cid)) ? TRUE : FALSE;
     }
-
   }
