@@ -123,12 +123,9 @@ class ConstantContactLinkForm extends FormBase {
   public function deAuthoriseAccountSubmit(array $form, FormStateInterface $form_state) {
     $id = $form_state->getTriggeringElement()['#account'];
     $account = Account::load($id);
-
-    // $account->delete();
+    $account->delete();
     drupal_set_message(t('Account de-authorised successfully'));
     $form_state->setRebuild();
   }
-
-
 
 }
