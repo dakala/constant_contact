@@ -9,7 +9,7 @@ __Dependencies:__
 
 __Steps:__
 
-- Edit your composer.json:
+- Edit the composer.json in your Drupal site root:
 
   ```javascript
   "require": {
