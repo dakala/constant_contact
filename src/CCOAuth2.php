@@ -73,7 +73,7 @@
             $values['message'] =  $e->getMessage();
             $ccAccount = Account::create($values)->save();
             // Clear cache
-            \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->delete();
+            \Drupal::cache(ConstantContactManager::CC_CACHE_BIN)->deleteAll();
           }
         }
 
