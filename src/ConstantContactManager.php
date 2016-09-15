@@ -155,10 +155,13 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @return array|bool
    */
   public function getActivities() {
+    $data = NULL;
+    if(empty($this->ccAccount)) {
+      return $data;
+    }
     $api_key = $this->ccAccount->id();
     $cid = 'constant_contact:activities:' . $api_key;
 
-    $data = NULL;
     if ($cache = \Drupal::cache(self::CC_CACHE_BIN)->get($cid)) {
       $data = $cache->data;
     }
@@ -200,10 +203,13 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function getContactLists() {
+    $data = NULL;
+    if(empty($this->ccAccount)) {
+      return $data;
+    }
     $api_key = $this->ccAccount->id();
     $cid = 'constant_contact:contact_lists:' . $api_key;
 
-    $data = NULL;
     if ($cache = \Drupal::cache(self::CC_CACHE_BIN)->get($cid)) {
       $data = $cache->data;
     }
@@ -279,10 +285,13 @@ class ConstantContactManager implements ConstantContactManagerInterface {
    * @throws \Ctct\Exceptions\CtctException
    */
   public function getContacts($listid = NULL) {
+    $data = NULL;
+    if(empty($this->ccAccount)) {
+      return $data;
+    }
     $cid = 'constant_contact:contacts:' . $this->ccAccount->id();
     $cid .= ($listid) ? ':' . $listid : '';
 
-    $data = NULL;
     if ($cache = \Drupal::cache(self::CC_CACHE_BIN)->get($cid)) {
       $data = $cache->data;
     }
